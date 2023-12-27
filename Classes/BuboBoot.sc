@@ -1,6 +1,6 @@
 Boot {
   *new {
-    arg path = "/Users/bubo/.config/livecoding";
+    arg samplePath = "/Users/bubo/.config/livecoding/samples";
     var banner = "┳┓  ┓     ┳┓\n"
                  "┣┫┓┏┣┓┏┓  ┣┫┏┓┏┓╋\n"
                  "┻┛┗┻┗┛┗┛  ┻┛┗┛┗┛┗";
@@ -10,6 +10,7 @@ Boot {
     var p; var c; var m;
     var s = Server.default;
     var clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(True);
+    var localPath = this.class.filenameSymbol.asString.dirname +/+ "Configuration";
     "=-=-=-=-=-=-=-=-=-=-=".postln;
     banner.postln;
     "=-=-=-=-=-=-=-=-=-=-=".postln;
@@ -22,11 +23,11 @@ Boot {
 	  s.options.numInputBusChannels = 16;   // Indiquer le nombre d'entrées de son interface audio
     p = ProxySpace.push(Server.default.boot, clock: clock);
     c = clock;
-    Bank.root = path +/+ "samples"; // Chemin vers les samples
+    Bank.root = samplePath;               // Chemin vers les samples
     Bank.lazyLoading = True;              // Lazy loading des samples
     Server.default.waitForBoot({
-      (path +/+ "Synthdefs.scd").load;               // Chargement des synthétiseurs
-      (path +/+ "Startup.scd").load;                 // Chargement post-configuration
+      (localPath +/+ "Synthdefs.scd").load;               // Chargement des synthétiseurs
+      (localPath+/+ "Startup.scd").load;                 // Chargement post-configuration
       StageLimiter.activate;              // StageLimiter pour les oreilles
       "=-=-=-=-=-=-=-=-=-=-=".postln;
       ready.postln;
