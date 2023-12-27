@@ -19,6 +19,8 @@ This quark brings syntax shortcuts and minor improvements (_highly personal matt
 There is a `Boot()` class that acts as a configuration file for my setup. This configuration file is rather classic:
 
 - raises the conservative options of `Server.default`
+- set the ProxySpace clock to use `LinkClock` for syncing with other
+applications
 - pushes everything into a `ProxySpace`
 - set paths for samples and synthdefs
 - install a `StageLimiter` not to blow up my speakers
