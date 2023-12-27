@@ -8,6 +8,7 @@ Boot {
                 "┃ ┃┃┃┣   ┃ ┃┃┃┃┣   ┣┫┣ ┣┫┃┃┗┫\n"
                 "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
     var s = Server.default;
+    var clock = LinkClock(130 / 60).latency_(Server.default.latency);
     var p;
     "=-=-=-=-=-=-=-=-=-=-=".postln;
     banner.postln;
@@ -19,15 +20,15 @@ Boot {
 	  s.options.device = "BlackHole 16ch"; // Choix de l'interface audio à utiliser
 	  s.options.numOutputBusChannels = 16; // Indiquer le nombre de sorties de son interface audio
 	  s.options.numInputBusChannels = 16;  // Indiquer le nombre d'entrées de son interface audio
-    p = ProxySpace.push(Server.default.boot);
-    p.makeTempoClock;                    // Gestion du tempo
-    p.clock.tempo = 120/60;
+    p = ProxySpace.push(Server.default.boot, clock: clock);
     Bank.root = path +/+ "samples"; // Chemin vers les samples
     Bank.lazyLoading = True; // Lazy loading des samples
     Server.default.waitForBoot({
       (path +/+ "Synthdefs.scd").load; // Chargement des synthétiseurs
       StageLimiter.activate;                               // StageLimiter pour les oreilles
+      "=-=-=-=-=-=-=-=-=-=-=".postln;
       ready.postln;
+      "=-=-=-=-=-=-=-=-=-=-=".postln;
     });
     }
 }
