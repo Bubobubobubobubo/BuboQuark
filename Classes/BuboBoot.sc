@@ -1,8 +1,17 @@
 Boot {
   *new {
     arg path = "/Users/bubo/.config/livecoding";
+    var banner = "┳┓  ┓     ┳┓\n"
+                 "┣┫┓┏┣┓┏┓  ┣┫┏┓┏┓╋\n"
+                 "┻┛┗┻┗┛┗┛  ┻┛┗┛┗┛┗";
+    var ready = "┓ ┳┓┏┏┓  ┏┓┏┓┳┓┏┓  ┳┓┏┓┏┓┳┓┓┏\n"
+                "┃ ┃┃┃┣   ┃ ┃┃┃┃┣   ┣┫┣ ┣┫┃┃┗┫\n"
+                "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
     var s = Server.default;
     var p;
+    "=-=-=-=-=-=-=-=-=-=-=".postln;
+    banner.postln;
+    "=-=-=-=-=-=-=-=-=-=-=".postln;
     s.options.numBuffers = 1024 * 128;   // Nombre de buffers disponibles pour stocker des samples
     s.options.memSize = 8192 * 64;       // Mémoire disponible pour le serveur
 	  s.options.numWireBufs = 2048;        // Augmenter ce nombre si "exceeded number of interconnect buffers"
@@ -18,8 +27,7 @@ Boot {
     Server.default.waitForBoot({
       (path +/+ "Synthdefs.scd").load; // Chargement des synthétiseurs
       StageLimiter.activate;                               // StageLimiter pour les oreilles
-      "== 💻 LIVE CODING PRÊT 💻 == ".postln;
+      ready.postln;
     });
-
     }
 }
