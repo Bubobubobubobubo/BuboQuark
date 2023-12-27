@@ -9,7 +9,7 @@
   dependencies: [
     "https://github.com/scztt/Singleton.quark",
     "https://github.com/scztt/Require.quark",
-    "https://github.com/supercollider-quarks/BatLib",
+    // "https://github.com/supercollider-quarks/BatLib",
     "https://github.com/supercollider-quarks/Bjorklund",
   ],
 	url:       "https://raphaelforment.fr",

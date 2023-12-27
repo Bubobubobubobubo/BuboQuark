@@ -12,7 +12,7 @@ Quarks.install("https://github.com/Bubobubobubobubo/BuboQuark")
 
 ## Usage
 
-This quark brings syntax shortcuts and minor improvements (_highly personal matter_) to make **SuperCollider** easier to handle on stage. 
+This quark brings syntax shortcuts and minor improvements (_highly personal matter_) to make **SuperCollider** easier to handle on stage.
 
 ### Boot method
 
@@ -25,7 +25,22 @@ applications
 - set paths for samples and synthdefs
 - install a `StageLimiter` not to blow up my speakers
 
+The `LinkClock` is accessible through the `c` global variable.
+
 **Note:** I put my configuration into `./config/livecoding/` and there should be a folder named `samples/` and a file called `Synthdefs.scd`.
+
+### Events
+
+I am using some Events as classes to store some of the things I want to load with each session (FX templates, SynthDef reference, etc). I am using :
+
+- `d`: **D**efinitions (`SynthDefs`)
+- `f`: **F**X templates (DSP functions with a simple name)
+
+To use one of the effects, you can use the following syntax:
+
+```supercollider
+~my_ndef.fx(100, 0.5, f[\vardel]);
+```
 
 ### Simplified useful commands
 

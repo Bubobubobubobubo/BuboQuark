@@ -1,5 +1,7 @@
 Panic {
+
   *new {
     CmdPeriod.run;
   }
+
 }
