@@ -4,7 +4,7 @@
     arg repeats=inf;
     var pat;
     if (this[0].isString,
-      { pat = Pseq(this[0], inf).collect({|i| Bank(i)}); },
+      { pat = Pseq([this[0]], inf).collect({|i| Bank(i)}); },
       { pat = this[0].collect({|i| Bank(i)})}
     );
     ^Pindex(pat, this[1], repeats)
