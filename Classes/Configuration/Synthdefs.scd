@@ -31,26 +31,6 @@ f.vardel = {
   d.sampler = z;
 );
 
-
-(
-  z = SynthDef.new(\revsampler, {
-  	arg buf, out=0, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=1;
-  	var sig;
-    var env = EnvGen.ar(Env.perc(attack, release, doneAction: 2));
-    var startPos = 0;
-    sig = PlayBuf.ar(
-      numChannels: 1,
-      bufnum: buf,
-      rate:BufRateScale.kr(buf) * rate,
-      trigger: 1, startPos:startPos,
-      loop:loop, doneAction: 2);
-  	sig = sig * amp;
-  	sig = Pan2.ar(sig * env, pan);
-  	Out.ar(out, sig);
-  }).add;
-  d.revsampler = z;
-);
-
 (
   z = SynthDef(\sinfb, {
   	arg freq = 440, atk = 0.01, sus = 0, rel = 1, fb = 0, amp = 0.3, out = 0, pan=0;

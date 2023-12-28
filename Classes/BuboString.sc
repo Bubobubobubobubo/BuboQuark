@@ -3,8 +3,9 @@
   /*
   * Interface with Bank.sc to return a sample faster
   */
-  sample {
-    arg sampleNumber = 2;
-    ^Bank(this)[sampleNumber];
+  sp {
+    arg sampleNumber = 0, repeats=inf;
+    ^Pindex(Bank(this), sampleNumber, repeats);
   }
+
 }
