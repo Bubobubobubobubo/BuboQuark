@@ -14,7 +14,7 @@ f.vardel = {
 
 (
   z = SynthDef.new(\sampler, {
-  	arg buf, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=0;
+  	arg buf, out=0, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=0;
   	var sig;
     var env = EnvGen.ar(Env.perc(attack, release, doneAction: 2));
     var startPos = 0;
@@ -26,7 +26,7 @@ f.vardel = {
       loop:loop, doneAction: 2);
   	sig = sig * amp;
   	sig = Pan2.ar(sig * env, pan);
-  	Out.ar(0, sig);
+  	Out.ar(out, sig);
   }).add;
   d.sampler = z;
 );
@@ -34,7 +34,7 @@ f.vardel = {
 
 (
   z = SynthDef.new(\revsampler, {
-  	arg buf, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=1;
+  	arg buf, out=0, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=1;
   	var sig;
     var env = EnvGen.ar(Env.perc(attack, release, doneAction: 2));
     var startPos = 0;
@@ -46,7 +46,7 @@ f.vardel = {
       loop:loop, doneAction: 2);
   	sig = sig * amp;
   	sig = Pan2.ar(sig * env, pan);
-  	Out.ar(0, sig);
+  	Out.ar(out, sig);
   }).add;
   d.revsampler = z;
 );

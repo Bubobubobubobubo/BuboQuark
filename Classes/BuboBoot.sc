@@ -9,7 +9,7 @@ Boot {
                 "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
     var p; var c; var m;
     var s = Server.default;
-    var clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(True);
+    var clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(true);
     var localPath = this.class.filenameSymbol.asString.dirname +/+ "Configuration";
     "=-=-=-=-=-=-=-=-=-=-=".postln;
     banner.postln;
@@ -24,7 +24,7 @@ Boot {
     p = ProxySpace.push(Server.default.boot, clock: clock);
     c = clock;
     Bank.root = samplePath;               // Chemin vers les samples
-    Bank.lazyLoading = True;              // Lazy loading des samples
+    Bank.lazyLoading = true;              // Lazy loading des samples
     Server.default.waitForBoot({
       (localPath +/+ "Synthdefs.scd").load;               // Chargement des synthétiseurs
       (localPath+/+ "Startup.scd").load;                 // Chargement post-configuration

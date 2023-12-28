@@ -7,17 +7,17 @@ StageLimiter
 	{ |numChannels = 2|
 		fork
 		{
-			lmFunc = 
-			{ 
-				{ 
-					activeSynth = 
+			lmFunc =
+			{
+				{
+					activeSynth =
 						Synth(\stageLimiter,
-							target: RootNode(Server.default), 
+							target: RootNode(Server.default),
 							addAction: \addToTail
 						);
-				}.defer(0.01) 
+				}.defer(0.01)
 			};
-			lmSynth = SynthDef(\stageLimiter, 
+			lmSynth = SynthDef(\stageLimiter,
 			{
 				var input = In.ar(0, numChannels);
 				input = Select.ar(CheckBadValues.ar(input, 0, 0), [input, DC.ar(0), DC.ar(0), input]);
