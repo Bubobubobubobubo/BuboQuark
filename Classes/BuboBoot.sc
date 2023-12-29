@@ -24,7 +24,7 @@ Boot {
     Bank.root = samplePath ? "/Users/bubo/.config/livecoding/samples";
     Bank.lazyLoading = true;
     Server.default.waitForBoot({
-      (localPath +/+ "Synthdefs.scd").load;
+      "-> Loading config from: %".format(localPath +/+ "Startup.scd").postln;
       (localPath+/+ "Startup.scd").load;
       StageLimiter.activate;
       this.fancyPrint(ready, 40);
