@@ -46,7 +46,7 @@ Boot {
       (configPath ? (this.localPath +/+ "Startup.scd")).load;
       StageLimiter.activate;
       this.fancyPrint(ready, 40);
-      // this.installServerTreeBehavior();
+      this.installServerTreeBehavior();
     });
     }
 
@@ -68,10 +68,10 @@ Boot {
 
     *installServerTreeBehavior {
       CmdPeriod.add({
-          "Dummy text".postln;
-         // var text = "Bubo SuperCollider Session\n Tempo: % =-= CPU: %".format(
-         //   this.clock.tempo * 60, Server.default.avgCPU.round(2)
-         // );
+        this.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
+         this.clock.tempo * 60, this.clock.numPeers,
+         Server.default.avgCPU.round(2),
+         Server.default.peakCPU.round(2)), 40)
       }, Server.default);
     }
 
