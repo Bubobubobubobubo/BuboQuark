@@ -26,7 +26,7 @@ f.vardel = {
       loop:loop, doneAction: 2);
   	sig = sig * amp;
   	sig = Pan2.ar(sig * env, pan);
-  	Out.ar(out, sig);
+    OffsetOut.ar(out, sig)
   }).add;
   d.sampler = z;
 );

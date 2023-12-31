@@ -51,4 +51,8 @@
   pwhite { arg repeats=inf;
     ^Pwhite(this[0], this[1], repeats);
   }
+
+  pseries { arg repeats=inf;
+    ^Pseries(this[0], this[1], repeats);
+  }
 }
