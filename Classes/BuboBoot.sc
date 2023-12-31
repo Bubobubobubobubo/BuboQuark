@@ -73,6 +73,12 @@ Boot {
          Server.default.avgCPU.round(2),
          Server.default.peakCPU.round(2)), 40)
       }, Server.default);
+      Event.addEventType(\buboEvent, {
+         arg server;
+         ~buf = Bank(~sp)[~n];
+         ~type = \note; // back to note
+         currentEnvironment.play;
+      });
     }
 
 }
