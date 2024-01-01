@@ -8,7 +8,7 @@ Boot {
   *new {
     arg configPath, samplePath;
     var s = Server.default;
-    var p; var c;
+    var p; var c; var t;
     var banner = "┳┓  ┓     ┳┓\n"
                  "┣┫┓┏┣┓┏┓  ┣┫┏┓┏┓╋\n"
                  "┻┛┗┻┗┛┗┛  ┻┛┗┛┗┛┗";
@@ -19,7 +19,9 @@ Boot {
 
     // Using Ableton Link Clock for automatic synchronisation with other peers
     this.clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(true);
+    TempoClock.default = this.clock;
     c = this.clock;
+    t = this.clock.tempo;
 
     // Defining the local path as default for configuration files if not configPath
     this.localPath = this.class.filenameSymbol.asString.dirname +/+ "Configuration";
@@ -47,6 +49,7 @@ Boot {
       StageLimiter.activate;
       this.fancyPrint(ready, 40);
       this.installServerTreeBehavior();
+      this.clock.enableMeterSync();
     });
     }
 
@@ -75,7 +78,7 @@ Boot {
       }, Server.default);
       Event.addEventType(\buboEvent, {
          arg server;
-         if (~sp.notNil && ~n.notNil, 
+         if (~sp.notNil && ~n.notNil,
             { ~buf = Bank(~sp)[~n % Bank(~sp).buffers.size]; }
          );
          ~type = \note; // back to note
