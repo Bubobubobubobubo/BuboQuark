@@ -14,14 +14,14 @@ f.vardel = {
 
 (
   z = SynthDef.new(\sampler, {
-  	arg buf, out=0, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=0;
+  	arg buf, out=0, freq=400, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=0;
   	var sig;
     var env = EnvGen.ar(Env.perc(attack, release, doneAction: 2));
     var startPos = 0;
     sig = PlayBuf.ar(
       numChannels: 1,
       bufnum: buf,
-      rate:BufRateScale.kr(buf) * rate,
+      rate:BufRateScale.kr(buf) * (rate * freq / 60.midicps),
       trigger: 1, startPos:startPos,
       loop:loop, doneAction: 2);
   	sig = sig * amp;
