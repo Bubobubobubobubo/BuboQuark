@@ -11,6 +11,13 @@ Bank : Singleton {
 		extensions = ["wav", "aiff", "aif", "flac", "mp3"];
 	}
 
+  *list {
+    PathName(Bank.root).entries.do({
+    arg item; item.folderName.postln;
+    })
+  }
+
+
 	*new {
 		|path, channels|
 		^super.new(path, channels);
