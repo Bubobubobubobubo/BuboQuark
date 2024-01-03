@@ -2,8 +2,8 @@ d = (); // This is a storage area for synthesizers
 f = (); // This is a storage for various FX functions
 
 (
-d.info = { arg obj, name; obj[name].allControlNames.do({arg i; i.postln;}); };
-d.show = { arg obj; obj.keys.do({arg i; i.postln}); };
+d.params = { arg obj, name; obj[name].allControlNames.do({arg i; i.postln;}); };
+d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
 );
 
 f.vardel = {

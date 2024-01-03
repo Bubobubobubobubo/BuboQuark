@@ -10,17 +10,73 @@
     ^Pindex(pat, this[1], repeats)
   }
 
+	findShortcuts {
+    arg pattern;
+    var short, correctedPattern;
+    correctedPattern = List.new();
+    short = Dictionary.newFrom([
+      // Instrument
+      \i, \instrument,
+      // Notes
+      \n, \note,
+      \mn, \midinote,
+      \deg, \degree,
+      \o, \octave,
+      \f, \freq,
+      \det, \detune,
+      // Durations
+      \d, \dur,
+      \st, \stretch,
+      \l, \legato,
+      // Amplitude
+      \a, \amp,
+      \p, \pan,
+      // Envelope
+      \a, \attack,
+      \d, \decay,
+      \s, \sustain,
+      \r, \release,
+      // Filter control
+      \r, \resonance,
+      \ff, \ffreq,
+      // Modulation
+      \m, \mod,
+      \c, \midichan,
+      \speed: \stretch,
+  	]);
+
+		// shortcuts are turned into regular keys;
+		pattern.do({| element |
+			if (short.includesKey(element),
+				{correctedPattern.add(short[element])},
+				{correctedPattern.add(element)}
+			);
+		});
+		^correctedPattern;
+	}
+
+  // pat {
+  //   arg node_proxy, quant=4, fade=0.05;
+  //   var newArray = this ++ [\type, \buboEvent];
+  //   node_proxy.quant_(quant);
+  //   node_proxy.fadeTime = fade;
+  //   node_proxy[0] = Pbind(*(this.findShortcuts(newArray)));
+  //   ^node_proxy;
+  // }
+
+
   pat {
-    arg node_proxy, quant=4, fade=0.05;
-    var newArray = this ++ [\type, \buboEvent];
-    node_proxy.quant_(quant);
-    node_proxy.fadeTime = fade;
-    node_proxy[0] = Pbind(*newArray);
-    ^node_proxy;
+    arg quant=4, fade=0.05;
+    var proxyName = this[0];
+    var newArray = this[1..] ++ [\type, \buboEvent];
+    currentEnvironment.at(proxyName.asSymbol).quant_(quant);
+    currentEnvironment.at(proxyName.asSymbol).fadeTime = fade;
+    currentEnvironment.at(proxyName.asSymbol)[0] = Pbind(*(this.findShortcuts(newArray)));
+    ^currentEnvironment.at(proxyName.asSymbol);
   }
 
-	pbind {
-		^Pbind(*this)
+	p {
+		^Pbind(*(this.findShortcuts(this)))
 	}
 
   euclid {

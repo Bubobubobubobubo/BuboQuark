@@ -78,9 +78,10 @@ Boot {
       }, Server.default);
       Event.addEventType(\buboEvent, {
          arg server;
-         if (~sp.notNil && ~n.notNil,
-            { ~buf = Bank(~sp)[~n % Bank(~sp).buffers.size]; }
+         if (~sp.notNil && ~nb.notNil,
+            { ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size]; }
          );
+         if (~nb == nil) {~nb = 0};
          ~type = \note; // back to note
          currentEnvironment.play;
       });
