@@ -13,11 +13,12 @@ f.vardel = {
 };
 
 (
-  z = SynthDef.new(\sampler, {
-  	arg buf, out=0, freq=440, rate=1, amp=1, pan=0, attack=0.01, release=1, loop=0;
+  z = SynthDef.new(\s, {
+  	arg buf, out=0, freq=440, rate=1, amp=1, begin=0, end=1, pan=0, attack=0.01, release=1, loop=0;
   	var sig;
     var env = EnvGen.ar(Env.perc(attack, release, doneAction: 2));
-    var startPos = 0;
+    var startPos = begin * BufFrames.kr(buf);
+    var endPos = end * BufFrames.kr(buf); // TODO: unused
     sig = PlayBuf.ar(
       numChannels: 1,
       bufnum: buf,
@@ -28,7 +29,7 @@ f.vardel = {
   	sig = Pan2.ar(sig * env, pan);
     OffsetOut.ar(out, sig)
   }).add;
-  d.sampler = z;
+  d.s = z;
 );
 
 (

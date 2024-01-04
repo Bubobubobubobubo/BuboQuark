@@ -13,6 +13,7 @@
     "https://github.com/scztt/Require.quark",
     "https://github.com/dmorgan-github/Pdv",
     "https://github.com/supercollider-quarks/Bjorklund",
+    "https://github.com/adcxyz/SafetyNet",
   ],
 	url:       "https://raphaelforment.fr",
 	isCompatible: {Main.versionAtLeast(3, 1)},
