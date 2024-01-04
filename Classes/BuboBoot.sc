@@ -4,7 +4,6 @@ Boot {
   classvar <>localPath;
   classvar <>samplePath;
 
-
   *new {
     arg configPath, samplePath, soundDevice;
     var s = Server.default;
@@ -31,7 +30,7 @@ Boot {
     s.options.memSize = 8192 * 64;
 	  s.options.numWireBufs = 2048;
 	  s.options.maxNodes = 1024 * 32;
-    (if soundDevice != nil, { s.options.device = soundDevice });
+    soundDevice ? s.options.device = soundDevice;
 	  s.options.numOutputBusChannels = 16;
 	  s.options.numInputBusChannels = 16;
 
