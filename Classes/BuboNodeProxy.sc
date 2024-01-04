@@ -3,6 +3,7 @@
     fx {
         arg number=1, wet=1, function = {|in| in};
         this[number] = \filter -> function;
+        if (wet > 1, {wet = 1});
         this.set(("wet" ++ number).asSymbol, wet);
         ^this;
     }

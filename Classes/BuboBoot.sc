@@ -6,7 +6,7 @@ Boot {
 
 
   *new {
-    arg configPath, samplePath;
+    arg configPath, samplePath, soundDevice;
     var s = Server.default;
     var p; var c; var t;
     var banner = "┳┓  ┓     ┳┓\n"
@@ -31,7 +31,7 @@ Boot {
     s.options.memSize = 8192 * 64;
 	  s.options.numWireBufs = 2048;
 	  s.options.maxNodes = 1024 * 32;
-	  s.options.device = "BlackHole 16ch";
+    (if soundDevice != nil, { s.options.device = soundDevice });
 	  s.options.numOutputBusChannels = 16;
 	  s.options.numInputBusChannels = 16;
 
@@ -46,7 +46,6 @@ Boot {
     Server.default.waitForBoot({
       "-> Loading config from: %".format(configPath ? (this.localPath +/+ "Startup.scd")).postln;
       (configPath ? (this.localPath +/+ "Startup.scd")).load;
-      // StageLimiter.activate; // NOTE: replaced by SafetyNet
       Safety.setLimit(0.8);
       this.fancyPrint(ready, 40);
       this.installServerTreeBehavior();
@@ -87,5 +86,4 @@ Boot {
          currentEnvironment.play;
       });
     }
-
 }

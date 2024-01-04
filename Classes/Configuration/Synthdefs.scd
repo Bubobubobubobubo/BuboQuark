@@ -12,6 +12,9 @@ f.vardel = {
     SinOsc.ar(c.beatDur * 4).range(500, 2000));
 };
 
+/*
+* This is the sampler used for 90% of sampling duties.
+*/
 (
   z = SynthDef.new(\s, {
   	arg buf, out=0, freq=440, rate=1, amp=1, begin=0, end=1, pan=0, attack=0.01, release=1, loop=0;
@@ -20,7 +23,7 @@ f.vardel = {
     var startPos = begin * BufFrames.kr(buf);
     var endPos = end * BufFrames.kr(buf); // TODO: unused
     sig = PlayBuf.ar(
-      numChannels: 1,
+      numChannels: 2,
       bufnum: buf,
       rate:BufRateScale.kr(buf) * (rate * freq / 60.midicps),
       trigger: 1, startPos:startPos,
