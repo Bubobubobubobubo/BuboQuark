@@ -121,21 +121,6 @@ f.vardel = {
 );
 
 (
-  z = SynthDef(\braids, {|out=0,freq=440,amp=0.5,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,timbre=0.5,color=0.5,model=0|
-    var envLength = sustain*(end-begin)/speed;
-    var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
-    var env = Env.asr;
-    var volume = IEnvGen.ar(env, line) * amp;
-    var sig;
-
-    freq = max(0, freq * speed * (1 + (accelerate * line)));
-    sig = MiBraids.ar(pitch: freq.cpsmidi, timbre: timbre, color: color, model: model);
-    Out.ar(out, Pan2.ar(sig * volume, pan));
-  }).add;
-  d.braids = z;
-);
-
-(
   z = SynthDef(\omi, {|out=0,freq=440,amp=0.5,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0|
     var envLength = sustain*(end-begin)/speed;
     var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
@@ -163,14 +148,29 @@ f.vardel = {
     'snare', 'hat'
   ].do({arg name, index;
       var synth;
-      synth = SynthDef(name, {|out=0,freq=440,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,
-          amp=1, timbre=0.5, harm=0.5,morph=0.5,level=1,lpgdecay=0,lpgcolour=0,mode=0|
-        var envLength = sustain*(end-begin)/speed;
-        var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
-        var env = Env.asr;
-        var volume = IEnvGen.ar(env, line) * amp;
+      synth = SynthDef(name, {
+      arg out,
+          freq=440,
+          attack=0.01,
+          decay=0.3,
+          sustain=0.5,
+          release=1.0,
+          pan=0,
+          speed=1,
+          accelerate=0,
+          amp=1,
+          alt=1,
+          timbre=0.5,
+          harm=0.5,
+          morph=0.5,
+          level=1,
+          gate=1,
+          lpgdecay=0,
+          lpgcolour=0,
+          mode=0;
+        var env = EnvGen.ar(Env.adsr(attack, decay, sustain, release, curve: [2, -4, -4]), doneAction: Done.freeSelf, gate: gate);
         var sig;
-        freq = max(0, freq * speed * (1 + (accelerate * line)));
+        freq = max(0, freq * speed * (1 + (accelerate * env)));
         sig = MiPlaits.ar(
           pitch: freq.cpsmidi,
           timbre: timbre,
@@ -181,12 +181,14 @@ f.vardel = {
           decay: lpgdecay,
           lpg_colour: lpgcolour,
         );
-        sig = Select.ar(mode, sig);
-        Out.ar(out, Pan2.ar(sig * volume, pan));
+        sig = Pan2.ar(sig[0], pan);
+        sig = sig * env * amp;
+        OffsetOut.ar(out, sig);
       }).add;
       d.put(name, synth);
   });
 );
+
 
 (
   ['csaw', 'morph', 'saw_square', 'sine_triangle',
@@ -204,44 +206,31 @@ f.vardel = {
   'question_mark'].do({
     arg name, index;
     var synth;
-    synth = SynthDef(name, {|out=0,freq=440,amp=1,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,timbre=0.5,color=0.5,ws=0,bits=0, resamp=0, decim=32|
-      var envLength = sustain*(end-begin)/speed;
-      var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
-      var env = Env.asr;
-      var volume = IEnvGen.ar(env, line) * amp;
+    synth = SynthDef(name, {
+      arg out,
+          freq=440,
+          amp=1,
+          attack=0.01,
+          decay=0.3,
+          sustain=0.5,
+          release=1.0,
+          pan=0,begin=0,
+          end=1,speed=1,
+          accelerate=0,
+          timbre=0.5,
+          color=0.5,
+          ws=0,bits=0,
+          resamp=0,
+          decim=32,
+          gate=1;
       var sig;
-
-      freq = max(0, freq * speed * (1 + (accelerate * line)));
+      var env = EnvGen.ar(Env.adsr(attack, decay, sustain, release, curve: [2, -4, -4]), doneAction: Done.freeSelf, gate: gate);
+      freq = max(0, freq * speed * (1 + (accelerate * env)));
       sig = MiBraids.ar(pitch: freq.cpsmidi, timbre: timbre, resamp: 0, decim: decim, color: color, model: index, ws: ws, bits:bits);
-      Out.ar(out, Pan2.ar(sig * volume, pan));
+      Out.ar(out, Pan2.ar(sig * env * amp, pan));
     }).add;
     d.put(name, synth);
   });
-);
-
-(
-  z = SynthDef(\plaits, {|out=0,freq=440,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,
-      amp=0.5,timbre=0.5,engine=0,harm=0.5,morph=0.5,level=1,lpgdecay=0,lpgcolour=0,mode=0|
-    var envLength = sustain*(end-begin)/speed;
-    var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
-    var env = Env.asr;
-    var volume = IEnvGen.ar(env, line) * amp;
-    var sig;
-    freq = max(0, freq * speed * (1 + (accelerate * line)));
-    sig = MiPlaits.ar(
-      pitch: freq.cpsmidi,
-      timbre: timbre,
-      harm: harm,
-      engine: engine,
-      morph: morph,
-      level: level,
-      decay: lpgdecay,
-      lpg_colour: lpgcolour,
-    );
-    sig = Select.ar(mode, sig);
-    Out.ar(out, Pan2.ar(sig * volume, pan));
-  }).add;
-  d.plaits = z;
 );
 
 (
