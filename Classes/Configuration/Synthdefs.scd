@@ -164,7 +164,7 @@ f.vardel = {
   ].do({arg name, index;
       var synth;
       synth = SynthDef(name, {|out=0,freq=440,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,
-          amp=0.5,timbre=0.5,harm=0.5,morph=0.5,level=1,lpgdecay=0,lpgcolour=0,mode=0|
+          amp=1, timbre=0.5, harm=0.5,morph=0.5,level=1,lpgdecay=0,lpgcolour=0,mode=0|
         var envLength = sustain*(end-begin)/speed;
         var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
         var env = Env.asr;
@@ -204,7 +204,7 @@ f.vardel = {
   'question_mark'].do({
     arg name, index;
     var synth;
-    synth = SynthDef(name, {|out=0,freq=440,amp=0.5,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,timbre=0.5,color=0.5,ws=0,bits=0, resamp=0, decim=32|
+    synth = SynthDef(name, {|out=0,freq=440,amp=1,sustain=1,pan=0,begin=0,end=1,speed=1,accelerate=0,timbre=0.5,color=0.5,ws=0,bits=0, resamp=0, decim=32|
       var envLength = sustain*(end-begin)/speed;
       var line = Line.ar(begin, end, envLength, doneAction: Done.freeSelf);
       var env = Env.asr;

@@ -47,6 +47,7 @@ Boot {
       "-> Loading config from: %".format(configPath ? (this.localPath +/+ "Startup.scd")).postln;
       (configPath ? (this.localPath +/+ "Startup.scd")).load;
       // StageLimiter.activate; // NOTE: replaced by SafetyNet
+      Safety.setLimit(0.8);
       this.fancyPrint(ready, 40);
       this.installServerTreeBehavior();
       this.clock.enableMeterSync();
