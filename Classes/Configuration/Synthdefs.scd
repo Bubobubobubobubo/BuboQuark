@@ -23,7 +23,7 @@ f.vardel = {
     var startPos = begin * BufFrames.kr(buf);
     var endPos = end * BufFrames.kr(buf); // TODO: unused
     sig = PlayBuf.ar(
-      numChannels: 2,
+      numChannels: 1,
       bufnum: buf,
       rate:BufRateScale.kr(buf) * (rate * freq / 60.midicps),
       trigger: 1, startPos:startPos,
