@@ -108,6 +108,29 @@ in `BuboString` or `BuboArray`. I am not entirely convinced by shortening the
 most complex Pattern types because they are complex after all. Consider blending
 the regular syntax with shortcuts when necessary.
 
+### Gated control-rate modulations
+
+Ever wished to use a control-rate modulation for any of your `Pbind` parameters?
+I have added a `Pdyn` pseudo-class that allows you to do that fairly easily.
+Take a look at the following example :
+
+```supercollider
+(
+[
+"test2", i: "modulo",
+  scale: Scale.minor,
+  octave:3,
+  // This is the line you need to look at
+  ffreq: Pdyn({XLine.ar(5000, 200, c.beatDur * 2)}), 
+  deg: "[0 7 0 5]^2.0 [0 3 0 5]^2.0 [~ ~ ~ ~]".p,
+].pat.play;
+~test2.fx(100, 0.35, {arg in; JPverb.ar(in, size: 10)});
+)
+```
+
+`Pdyn` will wrap a `Ndef` and repeat it _every time_ for every event. This is
+fairly hacky but it works rather well!
+
 ### Pbind
 
 I don't like using keys because of the backslash (`\`), a symbol that is really hard to type on **AZERTY** keyboards. For that reason, I much prefer the `["my_pattern", instrument: 'plaits', dur: 2]` syntax. I added a `.pat` method to convert an array into a `Pbind`. There are optional arguments to specify the `fadeTime` and `quant` for that pattern. Demo:
