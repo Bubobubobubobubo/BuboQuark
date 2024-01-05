@@ -101,7 +101,7 @@
   }
 
   pwrand { arg weights, repeats=1;
-    ^Pwrand(this, weights, repeats);
+    ^Pwrand(this, weights.normalizeSum, repeats);
   }
 
   pwhite { arg repeats=inf;
