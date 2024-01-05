@@ -3,8 +3,9 @@
 This repository is a collection of methods and hacks that I found to make live
 coding easier on **SuperCollider**. A secondary goal is to make that setup easy
 to install on other computers. This Quark is not bringing a lot of new features
-and it twists the langauge in a way that is highly personal. Internally, it
-relies a lot on **JITLib**, **Patterns** and **NodeProxies**.
+and it twists the language in a way that is highly personal. Internally, it
+relies a lot on **JITLib**, **Patterns** and **NodeProxies**. It truly feels
+like a collection of tips and hacks found on the internet.
 
 ## Installation
 
@@ -15,9 +16,7 @@ Quarks.install("https://github.com/Bubobubobubobubo/BuboQuark")
 To make use of the existing synth definitions, you will have to install the
 [mi-Ugens](https://github.com/v7b1/mi-UGens), a collection of **SuperCollider**
 UGens taken from Mutable Instruments module designs. Note that it is also
-preferable to install [sc3-plugins](https://github.com/supercollider/sc3-plugins), the official **UGen** extension suite for **SuperCollider**.
-
-All the other dependencies will be installed automatically when installing the
+preferable to install [sc3-plugins](https://github.com/supercollider/sc3-plugins), the official **UGen** extension suite for **SuperCollider**. All the other dependencies will be installed automatically when installing the
 **Quark**.
 
 ## How to use BuboQuark?
@@ -151,3 +150,36 @@ There is also `.fxin` and `.wet` functions, shortcuts for the `\filter` and
 `\filterIn` NodeProxy mechanisms. I have also added some rather shady functions
 that automatically pick up a slot for a specific fx: `fx1`, `fx2`, up to `fx9`.
 
+
+## Managing audio samples
+
+I use a lot of samples in my live coding sessions. I have created a few helpers
+to deal with audio samples without having to think about allocating buffers and
+cleaning up. Everything relies on [SAMP](https://gist.github.com/scztt/73a2ae402d9765294ae8f72979d1720e), a mechanism that I borrowed to scztt (Scott Carver).
+
+If your audio sample bank path is set right, you will have access to your bank
+with lazy loading on by default not to eat all your RAM:
+
+```supercollider
+Bank.list // List of all the available sample folders
+Bank('a/*') // List of all the samples in the 'a' folder
+Bank('a/*')[0].play; // Playing the first sample in the folder
+```
+
+This is great. I also added some mechanisms to automatically feed a sample when
+using patterns. That way, you don't have to type the `Bank` part all the time
+and can stay focused on your improvisation:
+
+```supercollider 
+[
+  "using_samples",
+  i: "s" // s is the default sampler
+  sp: "kick", // Give a string or symbol (pattern or not)
+  nb: 0 // Give a number (can be pattern too)
+].pat.play
+```
+
+Note that there is no optional argument here. You need `sp` and `nb` for it to
+work. You can use these arguments when using the abbreviated syntax for `Pbind`
+but not for regular `Pbind`. In that case, you will need to use the good old
+`buf: Bank('a/*')[0]` syntax.
