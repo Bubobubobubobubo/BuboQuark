@@ -1,7 +1,10 @@
 # BuboQuark: Simple, hassle-free live coding
 
-
-This repository is a collection of tools and methods that I use to make live coding easier on **SuperCollider**. My aim is to make that setup easy to install on my other computers. This repository is not bringing anything new or interesting. This is merely a default configuration for my **SuperCollider** install. It's just a bunch of scripts that I use to make my life easier and I am no expert. I rely heavily on **JITLib** and other Quarks that I find useful.
+This repository is a collection of methods and hacks that I found to make live
+coding easier on **SuperCollider**. A secondary goal is to make that setup easy
+to install on other computers. This Quark is not bringing a lot of new features
+and it twists the langauge in a way that is highly personal. Internally, it
+relies a lot on **JITLib**, **Patterns** and **NodeProxies**.
 
 ## Installation
 
@@ -9,32 +12,71 @@ To install the **BuboQuark**, simply run the following command in your favorite 
 ```bash
 Quarks.install("https://github.com/Bubobubobubobubo/BuboQuark")
 ```
+To make use of the existing synth definitions, you will have to install the
+[mi-Ugens](https://github.com/v7b1/mi-UGens), a collection of **SuperCollider**
+UGens taken from Mutable Instruments module designs. Note that it is also
+preferable to install [sc3-plugins](https://github.com/supercollider/sc3-plugins), the official **UGen** extension suite for **SuperCollider**.
 
-## Usage
+All the other dependencies will be installed automatically when installing the
+**Quark**.
 
-This quark brings syntax shortcuts and minor improvements (_highly personal matter_) to make **SuperCollider** easier to handle on stage.
+## How to use BuboQuark?
 
-### Boot method
+The main goal of **BuboQuark** is to provide everything you need to live code right out of the box. It is a balance between staying close to the initial language features while offering convenient shortcuts when possible:
 
-There is a `Boot()` class that acts as a configuration file for my setup. This configuration file is rather classic:
+- **boot** the server with a suitable configuration for live coding
+- **facililate** the use of patterns and blending with audio functions
+- **simplify** the use of `NodeProxy` roles for FX and mixing
+- **synchonize** the clock with other applications
+- **share** the audio signals easily with other applications
 
-- raises the conservative options of `Server.default`
+**SuperCollider** already possesses everything you need to do so. It is just not pre-arranged by default. 
+It is a programming language after all, you have to do some work to get it right.
+
+### Booting the server
+
+There is a `Boot()` pseudo-class that acts as a configuration file. This configuration file is rather classic:
+
+- raises the conservative options of `Server.default` to allow more connexions,
+  more buffers, etc.
 - set the ProxySpace clock to use `LinkClock` for syncing with other
 applications
-- pushes everything into a `ProxySpace`
-- set paths for samples and synthdefs
-- install a `StageLimiter` not to blow up my speakers
+- make the default environment a **JITLib** `ProxySpace`
+- Set custom default paths for sample and SynthDefs loading
+- Install a `StageLimiter` not to blow up the speakers
 
-The `LinkClock` is accessible through the `c` global variable.
+The `Boot()` constructor takes three arguments:
 
-**Note:** I put my configuration into `./config/livecoding/` and there should be a folder named `samples/` and a file called `Synthdefs.scd`.
+- `configPath`: path to a `.scd` configuration file that will be automatically
+loaded
+- `samplePath`: path to a folder containing your audio samples (in sub-folders)
+- `soundDevice`: name of the sound device to use
+
+All of these arguments are optional. However, they will default to my
+configuration if not set. If you want to set one option but not the others, use
+keywords arguments or `nil` values: `Boot(soundDevice: "BlackHole 16ch")`.
+
+### Controlling the clock
+
+The `LinkClock` is accessible through the `c` global variable. Be careful not to
+override it. It behaves like a regular `TempoClock` with the usual methods. 
+There are a few useful methods to control it and to use it efficiently: 
+
+- `c.tempo` : set or get the current tempo (will change other peers tempo)
+- `c.beatDur` : duration of a beat
+
+I use these methods very frequently when writing delay lines and time-based
+effects.
 
 ### Events
 
-I am using some Events as classes to store some of the things I want to load with each session (FX templates, SynthDef reference, etc). I am using :
+I am using some Events as pseudo-classes to store some things I want to keep track on during the session (FX templates, SynthDef reference, etc). I am using :
 
 - `d`: **D**efinitions (`SynthDefs`)
-- `f`: **F**X templates (DSP functions with a simple name)
+  - `d.list` : list all the available SynthDefs
+  - `d.params('synth_name')` : list the parameters of a SynthDef
+
+- `f`: **F**X templates (DSP functions accessible through a simple name)
 
 To use one of the effects, you can use the following syntax:
 
@@ -42,43 +84,57 @@ To use one of the effects, you can use the following syntax:
 ~my_ndef.fx(100, 0.5, f[\vardel]);
 ```
 
-### Simplified useful commands
+These are not really hard-coded. They are in my `.scd` configuration files. You
+can ignore this section entirely if you do things differently!
+
+### Simplified Server/Gui Control
+
+I like when SC panels stay on top of other applications by default:
 
 - `Panic()`: shortcut for `CmdPeriod.run`.
-- `Boot(path)`: boot my config (**hardcoded** path or user specified path)
 - `Scope()`: a scope that always stays on top!
 - `FScope()`: a frequency scope that always stay on top!
 - `Gui()`: a server GUI window that always stay on top!
 
-### Patterns
+### Pattern tweaks
 
 Patterns are powerful but writing them is long and can lead to a lot of typing errors. Moreover, they are often centered around list manipulation. **BuboQuark** defines a few helpers to transform a regular `Array` into various patterns:
 
 ```supercollider
 [1, 2, 3, 4].pseq
 ```
-Consider the source as a documentation.
 
-### Patterns
+Consider the source as a documentation. You will find all the additional methods
+in `BuboString` or `BuboArray`. I am not entirely convinced by shortening the
+most complex Pattern types because they are complex after all. Consider blending
+the regular syntax with shortcuts when necessary.
 
-I don't like using keys because of the backslash (`\`), a symbol that is really hard to type on AZERTY keyboards. For that reason, I much prefer the `[instrument: 'plaits', dur: 2]` syntax. I added a `.pat` method to convert an array into a `Pbind`. There are optional arguments to specify the `fadeTime` and `quant` for that pattern. Demo:
+### Pbind
+
+I don't like using keys because of the backslash (`\`), a symbol that is really hard to type on **AZERTY** keyboards. For that reason, I much prefer the `["my_pattern", instrument: 'plaits', dur: 2]` syntax. I added a `.pat` method to convert an array into a `Pbind`. There are optional arguments to specify the `fadeTime` and `quant` for that pattern. Demo:
 
 ```supercollider
 (
   [
+    "name_of_pattern",
     instrument: 'sinfb',
     rel: Pbrown(0.1, 0.5, 0.125, inf),
     note: Place([Pxrand([0, 3, 7, 10], 12), 0, 3, 5, 0, 12, 0, 7, 5, [5, 10, 7].pwhite(1)], inf),
     octave: [Pxrand([5, 6, 4], 4)].pxrand(inf), dur: Pbjorklund2(6, 8, inf) / 2,
     legato: 0.1
-  ].pat(~test).play;
+  ].pat.play;
 )
 ```
+`.pat` take a few optional arguments:
+
+- `quant` (defaults to `4`): pattern quantization (**LinkClock**)
+- `fade` (defaults to `0.05`): fading time (**NodeProxy**)
+
+There is also the `.p` function that will just turn the array into a `Pbind` without any additional behavior. This is useful when dealing with classic `NodeProxy Roles` like `\set` and `\xset`.
 
 ### NodeProxy
 
-The `NodeProxy` roles are somewhat verbose. I have tried to make the syntax easier on the eye by creating the `fx`, `wet` and `infx` methods. Here is a demo of how I use it:
-
+The `NodeProxy` roles are sometimes a bit verbose to my taste. I have tried to make the syntax easier on the eye by creating the `fx`, `wet` and `infx` methods. Here is a demo of how I use it:
 
 ```supercollider
 (
@@ -90,3 +146,8 @@ The `NodeProxy` roles are somewhat verbose. I have tried to make the syntax easi
 
 ~test.wet(10, 0.5) // bring the reverb up with the wet method
 ```
+
+There is also `.fxin` and `.wet` functions, shortcuts for the `\filter` and
+`\filterIn` NodeProxy mechanisms. I have also added some rather shady functions
+that automatically pick up a slot for a specific fx: `fx1`, `fx2`, up to `fx9`.
+

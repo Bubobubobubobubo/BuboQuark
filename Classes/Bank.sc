@@ -1,5 +1,6 @@
 /*
 * This file is taken from: https://gist.github.com/scztt/73a2ae402d9765294ae8f72979d1720e
+* I have added a method to list the samples in the bank.
 */
 
 Bank : Singleton {

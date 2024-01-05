@@ -55,16 +55,6 @@
 		^correctedPattern;
 	}
 
-  // pat {
-  //   arg node_proxy, quant=4, fade=0.05;
-  //   var newArray = this ++ [\type, \buboEvent];
-  //   node_proxy.quant_(quant);
-  //   node_proxy.fadeTime = fade;
-  //   node_proxy[0] = Pbind(*(this.findShortcuts(newArray)));
-  //   ^node_proxy;
-  // }
-
-
   pat {
     arg quant=4, fade=0.05;
     var proxyName = this[0];
