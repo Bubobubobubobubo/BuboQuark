@@ -1,0 +1,7 @@
++ Clock {
+
+  dur {
+    ^this.beatDur
+  }
+
+}
