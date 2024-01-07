@@ -3,11 +3,11 @@ Boot {
   classvar <>clock;
   classvar <>localPath;
   classvar <>samplePath;
+  classvar <>serverOptions;
 
   *new {
-    arg configPath, samplePath, soundDevice;
-    var s = Server.default;
-    var p; var c; var t;
+    arg configPath, samplePath, serverOptions;
+    var p; var c; var t; var s;
     var banner = "┳┓  ┓     ┳┓\n"
                  "┣┫┓┏┣┓┏┓  ┣┫┏┓┏┓╋\n"
                  "┻┛┗┻┗┛┗┛  ┻┛┗┛┗┛┗";
@@ -15,6 +15,25 @@ Boot {
                 "┃ ┃┃┃┣   ┃ ┃┃┃┃┣   ┣┫┣ ┣┫┃┃┗┫\n"
                 "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
     this.fancyPrint(banner, 40);
+
+    if (serverOptions == nil,
+    {
+      "-> Booting using default server configuration".postln;
+      s = Server.default;
+      s.options.numBuffers = 1024 * 128;
+      s.options.memSize = 8192 * 64;
+	    s.options.numWireBufs = 2048;
+	    s.options.maxNodes = 1024 * 32;
+	    s.options.numOutputBusChannels = 16;
+	    s.options.numInputBusChannels = 16;
+      s.options.outDevice = "BlackHole 16ch";
+    },
+    {
+      "-> Booting using user server configuration".postln;
+      s = Server.default;
+      s.options = serverOptions;
+    },
+    );
 
     // Using Ableton Link Clock for automatic synchronisation with other peers
     this.clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(true);
@@ -25,16 +44,7 @@ Boot {
     // Defining the local path as default for configuration files if not configPath
     this.localPath = this.class.filenameSymbol.asString.dirname +/+ "Configuration";
 
-    // Customizing server options: less conservative than SuperCollider defaults
-    s.options.numBuffers = 1024 * 128;
-    s.options.memSize = 8192 * 64;
-	  s.options.numWireBufs = 2048;
-	  s.options.maxNodes = 1024 * 32;
-    soundDevice ? s.options.device = soundDevice;
-	  s.options.numOutputBusChannels = 16;
-	  s.options.numInputBusChannels = 16;
-
-    p = ProxySpace.push(Server.default.boot, clock: this.clock);
+    p = ProxySpace.push(s.boot, clock: this.clock);
     this.samplePath = samplePath ? "/Users/bubo/.config/livecoding/samples";
 
     // Setting up the audio samples/buffers manager
@@ -52,9 +62,6 @@ Boot {
     });
     }
 
-    /*
-    * Convenience method for printing a message with a fancy separator.
-    */
     *fancyPrint {
       arg message, length;
       var separator= length.collect({
@@ -81,7 +88,7 @@ Boot {
             { ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size]; }
          );
          if (~nb == nil) {~nb = 0};
-         ~type = \note; // back to note
+         ~type = \note;
          currentEnvironment.play;
       });
     }
