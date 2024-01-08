@@ -1,4 +1,5 @@
 * BuboQuark Reference
+
   * Installation
     - [Read me first](read_me_first.md)
     - [Dependencies](dependencies.md)
@@ -24,8 +25,8 @@
   * Sampling
     - [Sample Library](library.md)
 * Live Coding with SC
-    - [I - A study of rhythms](first_session.md)
-    - [II - A study of timbres](second_session.md)
-    - [III - A study of modulations](third_session.md)
-    - [IV - A study of controls](fourth_session.md)
-    - [V - Everything together](final.md)
+    - [I - A study of rhythms](studies/first_session.md)
+    - [II - A study of timbres](studies/second_session.md)
+    - [III - A study of modulations](studies/third_session.md)
+    - [IV - A study of controls](studies/fourth_session.md)
+    - [V - Everything together](studies/final.md)
