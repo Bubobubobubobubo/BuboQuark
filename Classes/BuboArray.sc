@@ -44,7 +44,7 @@
       \mo, \midout,
       \c, \midichan,
       \st, \stretch,
-      \r, \root,
+      \rt, \root,
       \scl, \scale,
   	]);
 

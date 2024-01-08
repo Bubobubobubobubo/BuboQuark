@@ -29,7 +29,7 @@ The pitch model used by the default [Event](https://doc.sccode.org/Classes/Event
 
 | Key Name    | Shortcut    | Purpose                   |
 | ----------- | ----------- | ------------------------- |
-| \root       | r           | Root note                 |
+| \root       | rt          | Root note                 |
 | \midinote   | mn          | MIDI Note number          |
 | \note       | n           | Note number (O to `inf`)  |
 | \degree     | deg         | Degree of the scale       |
