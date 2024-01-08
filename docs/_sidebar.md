@@ -1,6 +1,6 @@
 * BuboQuark Reference
   * Installation
-    - [Read me first](warning.md)
+    - [Read me first](read_me_first.md)
     - [Dependencies](dependencies.md)
     - [Recommended](recommended.md)
     - [Editing code](editor.md)
