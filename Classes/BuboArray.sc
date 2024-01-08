@@ -20,16 +20,16 @@
       // Notes
       \n, \note,
       \mn, \midinote,
+      \vel, \velocity,
       \deg, \degree,
+      \off, \timingOffset,
       \o, \octave,
       \f, \freq,
       \det, \detune,
       // Durations
       \d, \dur,
-      \st, \stretch,
       \l, \legato,
       // Amplitude
-      \a, \amp,
       \p, \pan,
       // Envelope
       \a, \attack,
@@ -41,8 +41,11 @@
       \ff, \ffreq,
       // Modulation
       \m, \mod,
+      \mo, \midout,
       \c, \midichan,
-      \speed: \stretch,
+      \st, \stretch,
+      \r, \root,
+      \scl, \scale,
   	]);
 
 		// shortcuts are turned into regular keys;

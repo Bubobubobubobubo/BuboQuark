@@ -6,15 +6,13 @@ interpreter, there is a clock created by default, accessible through the `TempoC
 The `LinkClock` is accessible through the `c` global variable. Be careful not to
 override it by mistake! It behaves like the regular default `TempoClock` with the typical methods from this class. The main difference is that this timing information is shared with other peers on the network. You can synchronize easily with your friends ... basically by doing nothing if their applications are also using the same protocol.
 
-**Note:** The few additional methods are already very well documented. 
+**Note:** For _live coding_, you will need to use the clock fairly often to synchronize your time-based effects with it or to write various routines.
 
-**Note 2:** For _live coding_, you will need to use the clock fairly often to synchronize your time-based effects with it or to write various routines.
-
-##### Setting / Getting the tempo
+### Setting / Getting the tempo
 
 Use `c.tempo` to set or get the current tempo. Note that it _will_ change the tempo of the other peers. Be careful if you are playing with other people as they will probably not like it very much. There is also a `.beats` and `.quantum` method that can be used for other time-based calculations but I almost never use them.
 
-##### Beat duration
+### Beat duration
 
 Use `c.beatDur` to get the duration of a beat. This is so useful that I have
 created a shortcut for it: `c.dur`. It is a very common thing to use in audio

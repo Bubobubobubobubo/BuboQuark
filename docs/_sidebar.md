@@ -1,4 +1,4 @@
-* Guide
+* BuboQuark Reference
   * Installation
     - [Before we start](warning.md)
     - [Dependencies](dependencies.md)
@@ -6,7 +6,7 @@
     - [Editing code](editor.md)
   
   * Configuration
-    - [Boot Method](boot.md)
+    - [Session start](boot.md)
     - [Configuration](configuration.md)
     - [Audio routing](routing.md)
     - [More options](more_options.md)
@@ -18,10 +18,14 @@
   * Patterns
     - [Tempo and Clock](clock.md)
     - [Player shortcuts](player.md)
+    - [Key shortcuts](key_shortcuts.md)
     - [Pattern shortcuts](pattern.md)
-  
+    - [Dynamic control](dynamic.md)
   * Sampling
     - [Sample Library](library.md)
-    - [Using samples](sampling.md)
-  
-  * Audio effects
+* Live Coding with SC
+    - [I - A study of rhythms](first_session.md)
+    - [II - A study of timbres](second_session.md)
+    - [III - A study of modulations](third_session.md)
+    - [IV - A study of controls](fourth_session.md)
+    - [V - Everything together](final.md)
