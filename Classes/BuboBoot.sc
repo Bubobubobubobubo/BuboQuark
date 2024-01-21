@@ -8,13 +8,7 @@ Boot {
   *new {
     arg configPath, samplePath, serverOptions;
     var p; var c; var t; var s;
-    var banner = "┳┓  ┓     ┳┓\n"
-                 "┣┫┓┏┣┓┏┓  ┣┫┏┓┏┓╋\n"
-                 "┻┛┗┻┗┛┗┛  ┻┛┗┛┗┛┗";
-    var ready = "┓ ┳┓┏┏┓  ┏┓┏┓┳┓┏┓  ┳┓┏┓┏┓┳┓┓┏\n"
-                "┃ ┃┃┃┣   ┃ ┃┃┃┃┣   ┣┫┣ ┣┫┃┃┗┫\n"
-                "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
-    this.fancyPrint(banner, 40);
+    BuboUtils.fancyPrint(BuboUtils.banner, 40);
 
     if (serverOptions == nil,
     {
@@ -55,29 +49,18 @@ Boot {
     Server.default.waitForBoot({
       "-> Loading config from: %".format(configPath ? (this.localPath +/+ "Startup.scd")).postln;
       (configPath ? (this.localPath +/+ "Startup.scd")).load;
-      Safety.setLimit(0.8);
-      this.fancyPrint(ready, 40);
+      Safety.all;
+      Safety(s).defName = \safeLimit;
+      Safety.setLimit(1);
+      BuboUtils.fancyPrint(BuboUtils.ready, 40);
       this.installServerTreeBehavior();
       this.clock.enableMeterSync();
     });
     }
 
-    *fancyPrint {
-      arg message, length;
-      var separator= length.collect({
-        arg index;
-        if (index % 2 == 0, "=", "-")
-      });
-      separator = separator.join("");
-      [separator, message, separator].do({
-        arg each;
-        each.postln;
-      });
-    }
-
     *installServerTreeBehavior {
       CmdPeriod.add({
-        this.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
+        BuboUtils.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
          this.clock.tempo * 60, this.clock.numPeers,
          Server.default.avgCPU.round(2),
          Server.default.peakCPU.round(2)), 40)
@@ -88,6 +71,7 @@ Boot {
             { ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size]; }
          );
          if (~nb == nil) {~nb = 0};
+         if (~sp == nil) {~sp = 'default'};
          ~type = \note;
          currentEnvironment.play;
       });

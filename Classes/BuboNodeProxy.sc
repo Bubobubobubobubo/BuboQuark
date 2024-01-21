@@ -1,5 +1,7 @@
 + NodeProxy {
 
+    /* Simple FX chain management */
+
     fx {
         arg number=1, wet=1, function = {|in| in};
         this[number] = \filter -> function;
@@ -34,4 +36,54 @@
         this.set(("wet" ++ number).asSymbol, wet);
         ^this;
     }
+
+    /* Player-like syntax sugar */
+    => {
+      arg pattern;
+      pattern = EventShortener.findShortcuts(pattern);
+      pattern = pattern ++ [\type, \buboEvent];
+      this[0] = Pbind(*pattern);
+      this.quant = 4; this.fadeTime = 0.01;
+      ^this
+    }
+
+    /* FIX: Completely broken. What is the event type
+     * BuboEvent should fall back to after tweaking
+     * the pattern to my liking? 
+     */
+    -> {
+      arg pattern;
+      pattern = EventShortener.findShortcuts(pattern);
+      // pattern = pattern ++ [\type, \buboMonoEvent];
+      this[0] = Pmono(*pattern);
+      this.quant = 4;
+      this.fadeTime = 0.01;
+    }
+
+    f {
+      arg value;
+      this.fadeTime = value;
+      ^this
+    }
+
+    p {
+      arg quant, fade;
+      this.quant = quant;
+      this.fadeTime = fade;
+      this.play(fadeTime: fade);
+      ^this
+    }
+
+    s {
+      arg duration;
+      this.stop(fadeTime: duration)
+      ^this
+    }
+
+    / {
+      arg pattern;
+      this.stop(1);
+      ^this
+    }
+
 }
