@@ -14,7 +14,7 @@ Boot {
     {
       "-> Booting using default server configuration".postln;
       s = Server.default;
-      s.options.numBuffers = 1024 * 128;
+      s.options.numBuffers = 2048 * 256;
       s.options.memSize = 8192 * 64;
 	    s.options.numWireBufs = 2048;
 	    s.options.maxNodes = 1024 * 32;
