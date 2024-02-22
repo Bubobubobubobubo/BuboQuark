@@ -14,7 +14,7 @@ Boot {
     {
       "-> Booting using default server configuration".postln;
       s = Server.default;
-      s.options.numBuffers = 2048 * 256;
+      s.options.numBuffers = 2048 * 512;
       s.options.memSize = 8192 * 64;
 	    s.options.numWireBufs = 2048;
 	    s.options.maxNodes = 1024 * 32;
@@ -42,7 +42,7 @@ Boot {
     this.samplePath = samplePath ? "/Users/bubo/.config/livecoding/samples";
 
     // Setting up the audio samples/buffers manager
-    Bank.lazyLoading_(true);
+    Bank.lazyLoading = true;
     Bank.root = this.samplePath;
 
     // Post actions: installing behavior after server boot
@@ -70,7 +70,7 @@ Boot {
         arg server;
         ~sp = ~sp ?? 'default';
         ~nb = ~nb ?? 0;
-        ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size];
+        ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
         if (~buf.numChannels == 1) {
             ~instrument = \player;
         } {
