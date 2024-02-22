@@ -42,8 +42,8 @@ Boot {
     this.samplePath = samplePath ? "/Users/bubo/.config/livecoding/samples";
 
     // Setting up the audio samples/buffers manager
+    Bank.lazyLoading_(true);
     Bank.root = this.samplePath;
-    Bank.lazyLoading = true;
 
     // Post actions: installing behavior after server boot
     Server.default.waitForBoot({
@@ -66,14 +66,18 @@ Boot {
          Server.default.peakCPU.round(2)), 40)
       }, Server.default);
       Event.addEventType(\buboEvent, {
-         arg server;
-         if (~sp.notNil && ~nb.notNil,
-            { ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size]; }
-         );
-         if (~nb == nil) {~nb = 0};
-         if (~sp == nil) {~sp = 'default'};
-         ~type = \note;
-         currentEnvironment.play;
+      // This is a custom event that makes it easier to play samples
+        arg server;
+        ~sp = ~sp ?? 'default';
+        ~nb = ~nb ?? 0;
+        ~buf = Bank(~sp)[~nb % Bank(~sp).buffers.size];
+        if (~buf.numChannels == 1) {
+            ~instrument = \player;
+        } {
+            ~instrument = \splayer;
+        };
+        ~type = \note;
+        currentEnvironment.play;
       });
     }
 }

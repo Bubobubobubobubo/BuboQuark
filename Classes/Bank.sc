@@ -18,7 +18,6 @@ Bank : Singleton {
     })
   }
 
-
 	*new {
 		|path, channels|
 		^super.new(path, channels);
@@ -37,7 +36,9 @@ Bank : Singleton {
 	}
 
 	lazyLoading_{
+
 		|lazy|
+
 		if (lazyLoading != lazy) {
 			lazyLoading = lazy;
 			this.prUpdateBuffers();
@@ -178,7 +179,6 @@ Bank : Singleton {
 						buffers[index] = Buffer.readChannel(Server.default, paths[index], channels:Array.series(channels));
 					};
 				};
-
 				buffers[index];
 			}
 		}
