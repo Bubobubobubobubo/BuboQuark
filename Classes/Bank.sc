@@ -8,7 +8,7 @@ Bank : Singleton {
 	var <paths, buffers, <channels, <foundRoot, <foundRootModTime, markersCache, atCache;
 
 	*initClass {
-		root = "/Users/bubo/.config/livecoding/samples";
+		root = "/Users/bubo/.config/livecoding/samples".standardizePath;
 		extensions = ["wav", "aiff", "aif", "flac", "mp3"];
 	}
 
@@ -227,8 +227,15 @@ Bank : Singleton {
 		^this.at(index);
 	}
 
-	do 			{ |...args| buffers.size.collect(this.bufferAt(_)).do(*args) }
-	collect 	{ |...args| ^buffers.size.collect(this.bufferAt(_)).collect(*args) }
+	do {
+    |...args|
+    buffers.size.collect(this.bufferAt(_)).do(*args)
+  }
+
+	collect {
+    |...args|
+    ^buffers.size.collect(this.bufferAt(_)).collect(*args)
+  }
 
 	prUpdateBuffers {
 		if (Server.default.serverBooting or: {
@@ -284,10 +291,19 @@ Bank : Singleton {
 		^Pindex(Pseq([this], inf), keyPat)
 	}
 
-	// Single buffer support
-	asBuffer 		{ 				^this.singleSampleWrap(nil) }
-	asControlInput  { |...args| 	^this.prSingleSampleWrap(\asControlInput, *args) }
-	play 			{ |...args| 	^this.prSingleSampleWrap(\play, *args) }
+	asBuffer {
+    ^this.singleSampleWrap(nil)
+  }
+
+	asControlInput  {
+    |...args|
+    ^this.prSingleSampleWrap(\asControlInput, *args)
+  }
+
+	play {
+    |...args|
+    ^this.prSingleSampleWrap(\play, *args)
+  }
 
 	prSingleSampleWrap {
 		|method ...args|
