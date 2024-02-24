@@ -14,7 +14,7 @@ Boot {
     {
       "-> Booting using default server configuration".postln;
       s = Server.default;
-      s.options.numBuffers = 2048 * 512;
+      s.options.numBuffers = (2048 * 2048) * 2; // Some arbitrary number
       s.options.memSize = 8192 * 64;
 	    s.options.numWireBufs = 2048;
 	    s.options.maxNodes = 1024 * 32;
@@ -25,6 +25,8 @@ Boot {
     {
       "-> Booting using user server configuration".postln;
       s = Server.default;
+      // Imposing a very high number of buffers!
+      serverOptions.numBuffers = (2048 * 512) * 2;
       s.options = serverOptions;
     },
     );
@@ -72,7 +74,7 @@ Boot {
           ~sp = ~sp ?? 'default';
           ~nb = ~nb ?? 0;
           ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
-          if (~buf.numChannels == 1) {
+          if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
               ~instrument = \player;
           } {
               ~instrument = \splayer;
