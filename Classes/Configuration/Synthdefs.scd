@@ -226,4 +226,46 @@ f.vardel = {
   d.tides = z;
 );
 
+(
+  z = SynthDef('pink', {
+    arg out;
+    var pink = PinkTrombone.ar(
+      noiseSource: BPF.ar(WhiteNoise.ar(), \noiseFilter.kr(2000)),
+      freq: \freq.kr(800),
+      tenseness: \tenseness.kr(0.4),
+      tongueIndex: \tongueIndex.kr(30),
+      tongueDiameter: \tongueDiameter.kr(3.5),
+      constrictionX: \constrictionX.kr(1.5),
+      constrictionY: \constrictionY.kr(2.5),
+      fricativeIntens: \fricativeIntens.kr(1.5)
+    );
+    var env = Env.perc(\attack.kr(0.01), releaseTime: \release.kr(2.0)).kr(doneAction: 2);
+    var sound = pink * env;
+    Out.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
+  }).add;
+  d.pink = z;
+);
+
+
+(
+  z = SynthDef('kick', {
+    |out=0, freq, mul=512, vsweep=0.5, hold=0.25, release=0.25, amp=0.5, pan=0|
+      var p0, p1, p, freq0, freq1, freqEnv, sig;
+      p0 = 0.006699687;
+      p1 = 0.00001884606;
+      p = (1-vsweep)*p0 + (vsweep*p1);
+      freq1 = freq;
+      freq0 = freq1 * mul;
+      freqEnv = EnvGen.ar(Env([0,1], [1.0], [0]));
+      freqEnv = freq1 + ((freq0-freq1)/(1.0 + (freqEnv/p)));
+      sig = SinOsc.ar(freqEnv);
+      sig = sig * EnvGen.ar(Env([1,1,0], [hold,release], [0,0]), doneAction: Done.freeSelf) * amp;
+      sig = Pan2.ar(sig, pan);
+      Out.ar(out, sig);
+  }).add;
+  d.kick = z;
+);
+
 z = nil; // We don't need that variable anymore
+
+
