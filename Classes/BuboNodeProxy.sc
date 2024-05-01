@@ -37,6 +37,16 @@
         ^this;
     }
 
+    /* Syntax for sending MIDI messages */
+    >> {
+      arg pattern;
+      pattern = EventShortener.findShortcuts(pattern);
+      pattern = pattern ++ [type: 'midi'];
+      this[0] = Pbind(*pattern);
+      this.quant = 4; this.fadeTime = 0.01;
+      ^this
+    }
+
     /* Player-like syntax sugar */
     => {
       arg pattern;

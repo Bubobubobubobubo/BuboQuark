@@ -56,6 +56,7 @@ Boot {
       d.dirt = SuperDirt(2, s);
 		  d.dirt.fileExtensions = ["wav","aif","aiff","aifc","mp3"];
 		  d.dirt.loadSoundFiles("/Users/bubo/Library/Application\ Support/Sardine/SON/*");
+      d.dirt.loadSoundFiles("/Users/bubo/.config/livecoding/samples/*");
 	    d.dirt.doNotReadYet = true;
    	  d.dirt.start(57120, [ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]);
 		  (

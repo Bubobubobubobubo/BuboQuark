@@ -1,5 +1,9 @@
+// Setting up MIDI for hardware performances
+"Initialising MIDI...".postln;
 MIDIClient.init;
 p = currentEnvironment;
 c = currentEnvironment.clock;
-"Loading SynthDefs".postln;
+
+// Space for loading custom SynthDefs
+"Loading SynthDefs...".postln;
 "Synthdefs.scd".loadRelative;

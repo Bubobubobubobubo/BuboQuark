@@ -6,24 +6,10 @@ d.params = { arg obj, name; obj[name].allControlNames.do({arg i; i.postln;}); };
 d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
 );
 
-f.vardel = {
-  arg in;
-  HPF.ar(CombC.ar(in, 2, c.beatDur / [1, 2], 2),
-    SinOsc.ar(c.beatDur * 4).range(500, 2000));
-};
-
-/*
-* This is the sampler used for 90% of sampling duties.
-*/
 (
   z = SynthDef.new(\player, {
-  	arg buf;
-  	var sig, env = EnvGen.ar(
-    Env.perc(
-      \attack.kr(0.01),
-      \release.kr(1),
-      doneAction: 2)
-    );
+  	arg buf, out;
+  	var sig, env = EnvGen.ar(Env.perc(\attack.kr(0.01), \release.kr(1)), doneAction: 2);
     var startPos = \begin.kr(0) * BufFrames.kr(buf);
     var endPos = \end.kr(1) * BufFrames.kr(buf); // TODO: unused
     sig = PlayBuf.ar(
@@ -34,7 +20,7 @@ f.vardel = {
       loop:\loop.kr(0), doneAction: 2);
   	sig = sig * \amp.kr(-6.dbamp);
   	sig = Pan2.ar(sig * env, \pan.kr(0));
-    OffsetOut.ar(\out.kr(0), sig)
+    OffsetOut.ar(out, sig)
   }).add;
   d.player = z;
 );
@@ -45,12 +31,12 @@ f.vardel = {
 */
 (
   z = SynthDef.new(\splayer, {
-  	arg buf;
+  	arg buf, out;
   	var sig, env = EnvGen.ar(
-    Env.perc(
-      \attack.kr(0.01),
-      \release.kr(1),
-      doneAction: 2)
+      Env.perc(
+        \attack.kr(0.01),
+        \release.kr(1)),
+        doneAction: 2
     );
     var startPos = \begin.kr(0) * BufFrames.kr(buf);
     var endPos = \end.kr(1) * BufFrames.kr(buf); // TODO: unused
@@ -62,13 +48,14 @@ f.vardel = {
       loop:\loop.kr(0), doneAction: 2);
   	sig = sig * \amp.kr(-6.dbamp);
   	sig = Pan2.ar(sig * env, \pan.kr(0));
-    OffsetOut.ar(\out.kr(0), sig)
+    OffsetOut.ar(out, sig)
   }).add;
   d.splayer = z;
 );
 
 (
   z = SynthDef(\sinfb, {
+    arg out;
   	var sig, env;
   	env = EnvGen.ar(
       Env.linen(
@@ -82,20 +69,21 @@ f.vardel = {
       1
     );
   	sig = sig * env;
-  	OffsetOut.ar(\out.kr(0), Pan2.ar(sig, \pan.kr(0), \amp.kr(-6.dbamp)));
+  	OffsetOut.ar(out, Pan2.ar(sig, \pan.kr(0), \amp.kr(-6.dbamp)));
   }).add;
   d.sinfb = z;
 );
 
 (
   z = SynthDef(\omi, {
+    arg out;
     var envLength = \sustain.kr(1) * (\end.kr(1) - \begin.kr(0)) / \speed.kr(1);
     var line = Line.ar(\begin.kr, \end.kr, envLength, doneAction: Done.freeSelf);
     var env = Env.asr;
     var volume = IEnvGen.ar(env, line) * \amp.kr(-6.dbamp);
     var sig;
     sig = MiOmi.ar(pit: \freq.kr(400).cpsmidi);
-    OffsetOut.ar(\out.kr(0), Pan2.ar(sig * volume, \pan.kr(0)));
+    OffsetOut.ar(out, Pan2.ar(sig * volume, \pan.kr(0)));
   }).add;
   d.omi = z;
 );
@@ -107,14 +95,17 @@ f.vardel = {
     'Padditive', 'Pwavetable', 'Pchord', 'Pspeech',
     'Pswarm', 'Pnoise', 'Pparticle', 'Pstring',
     'Pmodal', 'Pbass', 'Psnare', 'Phat'
-  ].do({arg name, index;
+  ].do({
+      arg name, index;
       var synth;
       synth = SynthDef(name, {
+        arg out;
         var env = EnvGen.ar(
           Env.perc(
             \attack.kr(0.01),
             \release.kr(1)
-          ), doneAction: Done.freeSelf
+          ),
+          doneAction: Done.freeSelf
         );
         var sig;
         sig = MiPlaits.ar(
@@ -129,7 +120,7 @@ f.vardel = {
         );
         sig = Pan2.ar(sig[0], \pan.kr(0));
         sig = sig * env * \amp.kr(-6.dbamp);
-        OffsetOut.ar(\out.kr(0), sig);
+        OffsetOut.ar(out, sig);
       }).add;
       d.put(name, synth);
   });
@@ -189,6 +180,7 @@ f.vardel = {
     arg name, index;
     var synth;
     synth = SynthDef(name, {
+      arg out;
       var sig;
       var env = EnvGen.ar(Env.perc(\attack.kr(0.01), \release.kr(1)), doneAction: Done.freeSelf);
       var freq = \freq.kr;
@@ -202,7 +194,7 @@ f.vardel = {
         ws: \ws.kr(0),
         bits: \bits.kr(0)
       );
-      OffsetOut.ar(\out.kr(0), Pan2.ar(sig * env * \amp.kr(-6.dbamp), \pan.kr(0)));
+      OffsetOut.ar(out, Pan2.ar(sig * env * \amp.kr(-6.dbamp), \pan.kr(0)));
     }).add;
     d.put(name, synth);
   });
@@ -210,6 +202,7 @@ f.vardel = {
 
 (
   z = SynthDef(\tides, {
+    arg out;
     var env = Env.perc(\attack.kr(0.01), \release.kr(1)).ar(2);
     var sig = MiTides.ar(
       freq: \freq.kr(400),
@@ -221,7 +214,10 @@ f.vardel = {
       ramp_mode: 1,
       rate: 1
     );
-    OffsetOut.ar(\out.kr(0), Pan2.ar(sig * env * \amp.kr(-6.dbamp), \pan.kr(0)));
+    OffsetOut.ar(out,
+      Pan2.ar(sig * env * \amp.kr(-6.dbamp),
+      \pan.kr(0)
+    ));
   }).add;
   d.tides = z;
 );
@@ -241,7 +237,7 @@ f.vardel = {
     );
     var env = Env.perc(\attack.kr(0.01), releaseTime: \release.kr(2.0)).kr(doneAction: 2);
     var sound = pink * env;
-    Out.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
+    OffsetOut.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
   }).add;
   d.pink = z;
 );
@@ -249,7 +245,7 @@ f.vardel = {
 
 (
   z = SynthDef('kick', {
-    |out=0, freq, mul=512, vsweep=0.5, hold=0.25, release=0.25, amp=0.5, pan=0|
+      arg out, freq, mul=512, vsweep=0.5, hold=0.25, release=0.25, amp=0.5, pan=0;
       var p0, p1, p, freq0, freq1, freqEnv, sig;
       p0 = 0.006699687;
       p1 = 0.00001884606;
@@ -261,11 +257,35 @@ f.vardel = {
       sig = SinOsc.ar(freqEnv);
       sig = sig * EnvGen.ar(Env([1,1,0], [hold,release], [0,0]), doneAction: Done.freeSelf) * amp;
       sig = Pan2.ar(sig, pan);
-      Out.ar(out, sig);
+      OffsetOut.ar(out, sig);
   }).add;
   d.kick = z;
 );
 
+
+
+
+(
+  z = SynthDef('kraut', {
+    /*
+    * time: frequency sweep time
+    * tune: frequency division
+    * harmonics: nb of harmonics
+    * curve: distortion
+    * modSpeed: frequency bias
+    */
+    arg out;
+    var sweepFreq = XLine.ar(\freq.kr(400) * 1.99, \freq.kr, \attack.kr(0.05) / \time.kr(2));
+    var frequencyBias = SinOsc.ar(\modSpeed.kr(1)).range(0.90, 1);
+    var sin = SinOscFB.ar([
+      sweepFreq * \tune.kr(1) * frequencyBias,
+      sweepFreq / \tune.kr * frequencyBias],
+      feedback: \harmonics.kr(0.25));
+    var env = Env.perc(\attack.kr, \release.kr(0.5)).ar(doneAction: 2);
+    var sound = Safe.ar(sin.lincurve(-1, 1, -1, 1, \curve.kr(4)));
+    OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, \pan.kr(0), env))
+  }).add;
+  d.kraut = z;
+);
+
 z = nil; // We don't need that variable anymore
-
-
