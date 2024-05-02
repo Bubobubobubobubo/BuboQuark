@@ -40,34 +40,59 @@
     /* Syntax for sending MIDI messages */
     >> {
       arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.findShortcuts(pattern);
       pattern = pattern ++ [type: 'midi'];
       this[0] = Pbind(*pattern);
-      this.quant = 4; this.fadeTime = 0.01;
+      this.quant = quant;
+      this.fadeTime = fade;
+      this.play;
       ^this
     }
 
-    /* Player-like syntax sugar */
+    /* Player syntax sugar */
     => {
       arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.findShortcuts(pattern);
       pattern = pattern ++ [\type, \buboEvent];
       this[0] = Pbind(*pattern);
-      this.quant = 4; this.fadeTime = 0.01;
+      this.quant = quant;
+      this.fadeTime = fade;
+      this.play;
       ^this
     }
 
-    /* FIX: Completely broken. What is the event type
-     * BuboEvent should fall back to after tweaking
-     * the pattern to my liking? 
-     */
+    /* Audio Looper (sample playback) */
+    == {
+      arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
+      pattern = EventShortener.findShortcuts(pattern);
+      pattern = pattern ++ [\type, \buboLoopEvent];
+      pattern = pattern ++ [\legato, 1];
+      pattern = pattern ++ [
+        \time, Pkey(\dur) / Pfunc { currentEnvironment.clock.tempo }
+      ];
+      this[0] = Pbind(*pattern);
+      this.quant = quant;
+      this.fadeTime = fade;
+      this.play;
+      ^this
+    }
+
+    /* FIX: Rewrite this part, slightly broken */
     -> {
       arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.findShortcuts(pattern);
-      // pattern = pattern ++ [\type, \buboMonoEvent];
       this[0] = Pmono(*pattern);
-      this.quant = 4;
-      this.fadeTime = 0.01;
+      this.quant = quant;
+      this.fadeTime = fade;
+      this.play;
     }
 
     f {
@@ -94,6 +119,26 @@
       arg pattern;
       this.stop(1);
       ^this
+    }
+
+    getQuantFromPattern {
+      arg pattern; var quant;
+      var quantIndex = pattern.indexOf('quant');
+      if (quantIndex.notNil) {
+        ^pattern[quantIndex + 1]
+      } {
+        ^0
+      }
+    }
+
+    getFadeFromPattern {
+      arg pattern; var fade;
+      var fadeIndex = pattern.indexOf('fade');
+      if (fadeIndex.notNil) {
+        ^pattern[fadeIndex + 1]
+      } {
+        ^0.01
+      }
     }
 
 }

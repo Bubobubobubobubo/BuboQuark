@@ -53,6 +53,55 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
   d.splayer = z;
 );
 
+
+(
+  /* Crafted with some help from Bruno Gola */
+  z = SynthDef(\looperMono,
+      {
+        arg out;
+        var sig, env, index;
+        index = Select.kr(\direction.kr(1) > 0, [\index.kr(0) + 1, \index.kr]);
+        sig = PlayBuf.ar(
+          1,
+          \buf.kr(0),
+          (BufRateScale.kr(\buf.kr) * (BufSamples.kr(\buf.kr)
+          / \slices.kr(1) / BufSampleRate.kr(\buf.kr)) / \time.kr * \direction.kr) / 2,
+          1, BufSamples.kr(\buf.kr) * (index / \slices.kr), doneAction: 0
+        );
+        env = EnvGen.ar(
+          Env.asr(0.01, 1, 0.01), \gate.kr(1), doneAction: 2
+        );
+        sig = sig * env;
+        sig = sig * \amp.kr(-6.dbamp);
+        OffsetOut.ar(out,Pan2.ar(sig,\pan.kr(0)));
+  }).add;
+  d.looperMono = z;
+);
+
+(
+  /* Crafted with some help from Bruno Gola */
+  z = SynthDef(\looperStereo,
+      {
+        arg out;
+        var sig, env, index;
+        index = Select.kr(\direction.kr(1) > 0, [\index.kr(0) + 1, \index.kr]);
+        sig = PlayBuf.ar(
+          2,
+          \buf.kr(0),
+          (BufRateScale.kr(\buf.kr) * (BufSamples.kr(\buf.kr)
+          / \slices.kr(1) / BufSampleRate.kr(\buf.kr)) / \time.kr * \direction.kr) / 2,
+          1, BufSamples.kr(\buf.kr) * (index / \slices.kr), doneAction: 0
+        );
+        env = EnvGen.ar(
+          Env.asr(0.01, 1, 0.01), \gate.kr(1), doneAction: 2
+        );
+        sig = sig * env;
+        sig = sig * \amp.kr(-6.dbamp);
+        OffsetOut.ar(out,Pan2.ar(sig,\pan.kr(0)));
+  }).add;
+  d.looperStereo = z;
+);
+
 (
   z = SynthDef(\sinfb, {
     arg out;
