@@ -4,7 +4,7 @@ EventShortener {
     arg pattern, key, type, time;
     var additionalKeys = Dictionary.newFrom([
       \midi, [
-        type: \midi
+        type: \midi,
       ],
       \buboEvent, [
         type: \buboEvent,
@@ -18,26 +18,31 @@ EventShortener {
     ]);
     pattern = this.findShortcuts(pattern);
     pattern = this.functionsToNdef(pattern, key);
-    pattern = pattern ++ additionalKeys[type] ;
+    pattern = pattern ++ additionalKeys[type];
     if (pattern.includes('pat'), {
-      pattern = this.patternize(pattern);
+      pattern = this.patternize(pattern, type);
     });
+    pattern.postln;
     ^pattern
   }
 
   *patternize {
-    arg pattern;
-    var delta_index = nil;
+    arg pattern, type;
     var new_pattern = List();
     pattern.doAdjacentPairs({
       arg a, b, index;
       if (index % 2 == 0, {
         if (a === 'pat', {
           var temp = Pmini(b);
-          temp.pattern.postln;
+          var additionalKeys;
+          if (type == 'midi', {
+            additionalKeys = [\trig, \delta, \dur, \str];
+            new_pattern = new_pattern ++ [\type, 'midi'];
+          }, {
+            additionalKeys = [\trig, \delta, \dur, \str, \num];
+          });
           new_pattern = new_pattern ++ [
-            [\trig, \delta, \dur, \str, \num],
-            temp
+            additionalKeys, temp
           ];
           new_pattern = new_pattern ++ [
             degree: Pfunc({ |e|
@@ -48,20 +53,21 @@ EventShortener {
               }
             )});
           ];
-          if (pattern.includes(\midi) || pattern.includes('i') || pattern.includes('instrument') == false, {
-            new_pattern = new_pattern ++ [
-              sp: Pkey(\str),
-              nb: Pkey(\num),
-              fast: 1,
-            ];
-          });
+          if (type !== 'midi', {
+            if (pattern.includes('i') || pattern.includes('instrument') == false, {
+              new_pattern = new_pattern ++ [
+                sp: Pkey(\str),
+                nb: Pkey(\num),
+                fast: 1,
+              ];
+            });
+          })
         }, {
           new_pattern.add(a);
           new_pattern.add(b);
         });
       })
     });
-    new_pattern.postln;
     ^new_pattern
   }
 
