@@ -18,7 +18,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       rate:BufRateScale.kr(buf) * (\rate.kr(1) * \freq.kr(400) / 60.midicps),
       trigger: 1, startPos:startPos,
       loop:\loop.kr(0), doneAction: 2);
-  	sig = sig * \amp.kr(-6.dbamp);
+  	sig = sig * \amp.kr(-6).dbamp;
   	sig = Pan2.ar(sig * env, \pan.kr(0));
     OffsetOut.ar(out, sig)
   }).add;
@@ -46,7 +46,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       rate:BufRateScale.kr(buf) * (\rate.kr(1) * \freq.kr(400) / 60.midicps),
       trigger: 1, startPos:startPos,
       loop:\loop.kr(0), doneAction: 2);
-  	sig = sig * \amp.kr(-6.dbamp);
+  	sig = sig * \amp.kr(-6).dbamp;
   	sig = Pan2.ar(sig * env, \pan.kr(0));
     OffsetOut.ar(out, sig)
   }).add;
@@ -72,7 +72,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
           Env.asr(0.01, 1, 0.01), \gate.kr(1), doneAction: 2
         );
         sig = sig * env;
-        sig = sig * \amp.kr(-6.dbamp);
+        sig = sig * \amp.kr(-6).dbamp;
         OffsetOut.ar(out,Pan2.ar(sig,\pan.kr(0)));
   }).add;
   d.looperMono = z;
@@ -96,7 +96,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
           Env.asr(0.01, 1, 0.01), \gate.kr(1), doneAction: 2
         );
         sig = sig * env;
-        sig = sig * \amp.kr(-6.dbamp);
+        sig = sig * \amp.kr(-6).dbamp;
         OffsetOut.ar(out,Pan2.ar(sig,\pan.kr(0)));
   }).add;
   d.looperStereo = z;
@@ -118,7 +118,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       1
     );
   	sig = sig * env;
-  	OffsetOut.ar(out, Pan2.ar(sig, \pan.kr(0), \amp.kr(-6.dbamp)));
+  	OffsetOut.ar(out, Pan2.ar(sig, \pan.kr(0), \amp.kr(-6).dbamp));
   }).add;
   d.sinfb = z;
 );
@@ -129,7 +129,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
     var envLength = \sustain.kr(1) * (\end.kr(1) - \begin.kr(0)) / \speed.kr(1);
     var line = Line.ar(\begin.kr, \end.kr, envLength, doneAction: Done.freeSelf);
     var env = Env.asr;
-    var volume = IEnvGen.ar(env, line) * \amp.kr(-6.dbamp);
+    var volume = IEnvGen.ar(env, line) * \amp.kr(-6).dbamp;
     var sig;
     sig = MiOmi.ar(pit: \freq.kr(400).cpsmidi);
     OffsetOut.ar(out, Pan2.ar(sig * volume, \pan.kr(0)));
@@ -168,7 +168,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
           lpg_colour: \lpgcolour.kr(0),
         );
         sig = Pan2.ar(sig[0], \pan.kr(0));
-        sig = sig * env * \amp.kr(-6.dbamp);
+        sig = sig * env * \amp.kr(-6).dbamp;
         OffsetOut.ar(out, sig);
       }).add;
       d.put(name, synth);
@@ -243,7 +243,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
         ws: \ws.kr(0),
         bits: \bits.kr(0)
       );
-      OffsetOut.ar(out, Pan2.ar(sig * env * \amp.kr(-6.dbamp), \pan.kr(0)));
+      OffsetOut.ar(out, Pan2.ar(sig * env * \amp.kr(-6).dbamp, \pan.kr(0)));
     }).add;
     d.put(name, synth);
   });
@@ -264,7 +264,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       rate: 1
     );
     OffsetOut.ar(out,
-      Pan2.ar(sig * env * \amp.kr(-6.dbamp),
+      Pan2.ar(sig * env * \amp.kr(-6).dbamp,
       \pan.kr(0)
     ));
   }).add;
@@ -294,18 +294,18 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
 
 (
   z = SynthDef('kick', {
-      arg out, freq, mul=512, vsweep=0.5, hold=0.25, release=0.25, amp=0.5, pan=0;
+      arg out;
       var p0, p1, p, freq0, freq1, freqEnv, sig;
       p0 = 0.006699687;
       p1 = 0.00001884606;
-      p = (1-vsweep)*p0 + (vsweep*p1);
-      freq1 = freq;
-      freq0 = freq1 * mul;
+      p = (1-\vsweep.kr(0.5)) * p0 + (\vsweep.kr * p1);
+      freq1 = \freq.kr(100);
+      freq0 = freq1 * \mul.kr(20);
       freqEnv = EnvGen.ar(Env([0,1], [1.0], [0]));
       freqEnv = freq1 + ((freq0-freq1)/(1.0 + (freqEnv/p)));
       sig = SinOsc.ar(freqEnv);
-      sig = sig * EnvGen.ar(Env([1,1,0], [hold,release], [0,0]), doneAction: Done.freeSelf) * amp;
-      sig = Pan2.ar(sig, pan);
+      sig = sig * EnvGen.ar(Env([1,1,0], [\hold.kr(0.25), \release.kr(0.5)], [0,0]), doneAction: Done.freeSelf) * \amp.kr(-6).dbamp;
+      sig = Pan2.ar(sig, \pan.kr(0.0));
       OffsetOut.ar(out, sig);
   }).add;
   d.kick = z;

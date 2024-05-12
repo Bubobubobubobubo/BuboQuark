@@ -10,6 +10,7 @@
 	schelp:    "BuboQuark",
   dependencies: [
     "https://github.com/cappelnord/BenoitLib",
+    "https://github.com/j0py/Pmini",
     "https://github.com/scztt/Singleton.quark",
     "https://github.com/scztt/Require.quark",
     "https://github.com/dmorgan-github/Pdv",

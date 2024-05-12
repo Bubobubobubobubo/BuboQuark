@@ -1,3 +1,4 @@
+
 + NodeProxy {
 
     /* Simple FX chain management */
@@ -10,15 +11,15 @@
         ^this;
     }
 
-    fx1 { arg wet, function; this.fx(100, wet, function); }
-    fx2 { arg wet, function; this.fx(200, wet, function); }
-    fx3 { arg wet, function; this.fx(300, wet, function); }
-    fx4 { arg wet, function; this.fx(400, wet, function); }
-    fx5 { arg wet, function; this.fx(500, wet, function); }
-    fx6 { arg wet, function; this.fx(600, wet, function); }
-    fx7 { arg wet, function; this.fx(700, wet, function); }
-    fx8 { arg wet, function; this.fx(800, wet, function); }
-    fx9 { arg wet, function; this.fx(900, wet, function); }
+    fx1 { arg wet=0.5, function; this.fx(100, wet, function); }
+    fx2 { arg wet=0.5, function; this.fx(200, wet, function); }
+    fx3 { arg wet=0.5, function; this.fx(300, wet, function); }
+    fx4 { arg wet=0.5, function; this.fx(400, wet, function); }
+    fx5 { arg wet=0.5, function; this.fx(500, wet, function); }
+    fx6 { arg wet=0.5, function; this.fx(600, wet, function); }
+    fx7 { arg wet=0.5, function; this.fx(700, wet, function); }
+    fx8 { arg wet=0.5, function; this.fx(800, wet, function); }
+    fx9 { arg wet=0.5, function; this.fx(900, wet, function); }
 
     wet { arg number=1, wet=1;
         this.set(("wet" ++ number).asSymbol, wet);
@@ -37,17 +38,25 @@
         ^this;
     }
 
+    prepareToPlay {
+      | proxy, quant, fade |
+      proxy.quant = quant;
+      proxy.fadeTime = fade;
+      // proxy.play;
+    }
+
     /* Syntax for sending MIDI messages */
     >> {
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.findShortcuts(pattern);
-      pattern = pattern ++ [type: 'midi'];
+      pattern = EventShortener.process(
+        pattern,
+        this.key,
+        [type: 'midi']
+      );
       this[0] = Pbind(*pattern);
-      this.quant = quant;
-      this.fadeTime = fade;
-      this.play;
+      this.prepareToPlay(this, quant, fade);
       ^this
     }
 
@@ -56,43 +65,50 @@
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.findShortcuts(pattern);
-      pattern = pattern ++ [\type, \buboEvent];
+      pattern = EventShortener.process(
+        pattern,
+        this.key,
+        [\type, \buboEvent]
+      );
       this[0] = Pbind(*pattern);
-      this.quant = quant;
-      this.fadeTime = fade;
-      this.play;
+      this.prepareToPlay(this, quant, fade);
       ^this
     }
 
     /* Audio Looper (sample playback) */
     == {
+      // TODO: fix this terrible mess
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.findShortcuts(pattern);
-      pattern = pattern ++ [\type, \buboLoopEvent];
-      pattern = pattern ++ [\legato, 1];
-      pattern = pattern ++ [
-        \time, Pkey(\dur) / Pfunc { currentEnvironment.clock.tempo }
-      ];
-      this[0] = Pbind(*pattern);
-      this.quant = quant;
-      this.fadeTime = fade;
-      this.play;
+      var nbSlices = this.getValueFromPattern(pattern, 'slices', 1);
+      var time = (Pkey(\dur) / Pfunc { currentEnvironment.clock.tempo }) / nbSlices;
+      pattern = EventShortener.process(
+        pattern,
+        this.key,
+        [
+          \type, \buboLoopEvent,
+          \legato, 1,
+          \time, time
+        ]
+      );
+      this[0] = Pmono(*pattern);
+      this.prepareToPlay(this, quant, fade);
       ^this
     }
 
-    /* FIX: Rewrite this part, slightly broken */
+    /* Pmono player */
     -> {
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.findShortcuts(pattern);
+      pattern = EventShortener.processPmono(
+        pattern,
+        this.key
+      );
       this[0] = Pmono(*pattern);
-      this.quant = quant;
-      this.fadeTime = fade;
-      this.play;
+      this.prepareToPlay(this; quant, fade);
+      ^this
     }
 
     f {
@@ -121,24 +137,25 @@
       ^this
     }
 
-    getQuantFromPattern {
-      arg pattern; var quant;
-      var quantIndex = pattern.indexOf('quant');
-      if (quantIndex.notNil) {
-        ^pattern[quantIndex + 1]
+    getValueFromPattern {
+      arg pattern, key, default;
+      var keyIndex = pattern.indexOf(key);
+      if (keyIndex.notNil) {
+        ^pattern[keyIndex + 1]
       } {
-        ^0
+        ^default
       }
     }
 
-    getFadeFromPattern {
-      arg pattern; var fade;
-      var fadeIndex = pattern.indexOf('fade');
-      if (fadeIndex.notNil) {
-        ^pattern[fadeIndex + 1]
-      } {
-        ^0.01
-      }
+    getQuantFromPattern {
+      arg pattern;
+      ^this.getValueFromPattern(pattern, 'quant', 4)
     }
+
+    getFadeFromPattern {
+      arg pattern;
+      ^this.getValueFromPattern(pattern, 'fade', 0.01)
+    }
+
 
 }
