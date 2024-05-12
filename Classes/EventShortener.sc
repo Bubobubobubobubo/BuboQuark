@@ -1,13 +1,27 @@
 EventShortener {
 
   *process {
-    arg pattern, key, other_keys;
+    arg pattern, key, type, time;
+    var additionalKeys = Dictionary.newFrom([
+      \midi, [
+        type: \midi
+      ],
+      \buboEvent, [
+        type: \buboEvent,
+      ],
+      \looper, [
+          type: \buboLoopEvent,
+          legato: 1,
+          time: time
+      ],
+      \pmono, [],
+    ]);
+    pattern = this.findShortcuts(pattern);
+    pattern = this.functionsToNdef(pattern, key);
+    pattern = pattern ++ additionalKeys[type] ;
     if (pattern.includes('pat'), {
       pattern = this.patternize(pattern);
     });
-    pattern = this.findShortcuts(pattern);
-    pattern = this.functionsToNdef(pattern, key);
-    pattern = pattern ++ other_keys ;
     ^pattern
   }
 
@@ -34,7 +48,7 @@ EventShortener {
               }
             )});
           ];
-          if (pattern.includes('i') || pattern.includes('instrument') == false, {
+          if (pattern.includes(\midi) || pattern.includes('i') || pattern.includes('instrument') == false, {
             new_pattern = new_pattern ++ [
               sp: Pkey(\str),
               nb: Pkey(\num),
@@ -47,14 +61,8 @@ EventShortener {
         });
       })
     });
+    new_pattern.postln;
     ^new_pattern
-  }
-
-  *processPmono {
-    arg pattern, key;
-    pattern = this.findShortcuts(pattern);
-    pattern = this.functionsToNdef(pattern, key);
-    ^pattern
   }
 
   *functionsToNdef {

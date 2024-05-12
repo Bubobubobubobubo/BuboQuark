@@ -1,8 +1,6 @@
 
 + NodeProxy {
 
-    /* Simple FX chain management */
-
     fx {
         arg number=1, wet=1, function = {|in| in};
         this[number] = \filter -> function;
@@ -51,9 +49,7 @@
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.process(
-        pattern,
-        this.key,
-        [type: 'midi']
+        pattern, this.key, \midi, 0
       );
       this[0] = Pbind(*pattern);
       this.prepareToPlay(this, quant, fade);
@@ -66,9 +62,7 @@
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.process(
-        pattern,
-        this.key,
-        [\type, \buboEvent]
+        pattern, this.key, \buboEvent, 0
       );
       this[0] = Pbind(*pattern);
       this.prepareToPlay(this, quant, fade);
@@ -84,13 +78,7 @@
       var nbSlices = this.getValueFromPattern(pattern, 'slices', 1);
       var time = (Pkey(\dur) / Pfunc { currentEnvironment.clock.tempo }) / nbSlices;
       pattern = EventShortener.process(
-        pattern,
-        this.key,
-        [
-          \type, \buboLoopEvent,
-          \legato, 1,
-          \time, time
-        ]
+        pattern, this.key, \looper, time
       );
       this[0] = Pmono(*pattern);
       this.prepareToPlay(this, quant, fade);
@@ -102,38 +90,11 @@
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.processPmono(
-        pattern,
-        this.key
+      pattern = EventShortener.process(
+        pattern, this.key, 'pmono', 0
       );
       this[0] = Pmono(*pattern);
       this.prepareToPlay(this; quant, fade);
-      ^this
-    }
-
-    f {
-      arg value;
-      this.fadeTime = value;
-      ^this
-    }
-
-    p {
-      arg quant, fade;
-      this.quant = quant;
-      this.fadeTime = fade;
-      this.play(fadeTime: fade);
-      ^this
-    }
-
-    s {
-      arg duration;
-      this.stop(fadeTime: duration)
-      ^this
-    }
-
-    / {
-      arg pattern;
-      this.stop(1);
       ^this
     }
 
@@ -156,6 +117,4 @@
       arg pattern;
       ^this.getValueFromPattern(pattern, 'fade', 0.01)
     }
-
-
 }
