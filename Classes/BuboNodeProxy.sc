@@ -64,6 +64,9 @@
       pattern = EventShortener.process(
         pattern, this.key, \buboEvent, 0
       );
+      pattern = EffectChain.process(
+        pattern, this.key
+      );
       this[0] = Pbind(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this
@@ -94,7 +97,7 @@
         pattern, this.key, 'pmono', 0
       );
       this[0] = Pmono(*pattern);
-      this.prepareToPlay(this; quant, fade);
+      this.prepareToPlay(this, quant, fade);
       ^this
     }
 

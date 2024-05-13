@@ -2,28 +2,28 @@ EventShortener {
 
   *process {
     arg pattern, key, type, time;
+    var new_pattern;
     var additionalKeys = Dictionary.newFrom([
       \midi, [
         type: \midi,
+        midiCmd: \noteOn,
       ],
       \buboEvent, [
         type: \buboEvent,
       ],
       \looper, [
           type: \buboLoopEvent,
-          legato: 1,
-          time: time
+          legato: 1, time: time
       ],
       \pmono, [],
     ]);
-    pattern = this.findShortcuts(pattern);
-    pattern = this.functionsToNdef(pattern, key);
-    pattern = pattern ++ additionalKeys[type];
+    new_pattern = this.findShortcuts(pattern);
+    new_pattern = this.functionsToNdef(new_pattern, key);
+    new_pattern = new_pattern ++ additionalKeys[type];
     if (pattern.includes('pat'), {
-      pattern = this.patternize(pattern, type);
+      new_pattern = this.patternize(new_pattern, type);
     });
-    pattern.postln;
-    ^pattern
+    ^new_pattern
   }
 
   *patternize {
@@ -41,9 +41,7 @@ EventShortener {
           }, {
             additionalKeys = [\trig, \delta, \dur, \str, \num];
           });
-          new_pattern = new_pattern ++ [
-            additionalKeys, temp
-          ];
+          new_pattern = new_pattern ++ [additionalKeys, temp];
           new_pattern = new_pattern ++ [
             degree: Pfunc({ |e|
               if (e.trig > 0, {
@@ -56,15 +54,15 @@ EventShortener {
           if (type !== 'midi', {
             if (pattern.includes('i') || pattern.includes('instrument') == false, {
               new_pattern = new_pattern ++ [
-                sp: Pkey(\str),
-                nb: Pkey(\num),
+                sp: Pfunc { |e| e.str ? "kick" },
+                nb: Pfunc { |e| e.num ? 0 },
+                instrument: Pfunc { |e| e.str.isNil && e.num.isNil ? "default" },
                 fast: 1,
               ];
             });
           })
         }, {
-          new_pattern.add(a);
-          new_pattern.add(b);
+          new_pattern = new_pattern ++ [a, b];
         });
       })
     });

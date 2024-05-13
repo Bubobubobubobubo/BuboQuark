@@ -312,8 +312,6 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
 );
 
 
-
-
 (
   z = SynthDef('kraut', {
     /*
@@ -325,13 +323,14 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
     */
     arg out;
     var sweepFreq = XLine.ar(\freq.kr(400) * 1.99, \freq.kr, \attack.kr(0.05) / \time.kr(2));
-    var frequencyBias = SinOsc.ar(\modSpeed.kr(1)).range(0.90, 1);
+    var frequencyBias = SinOsc.ar(\modSpeed.kr(8)).range(0.99, 1);
     var sin = SinOscFB.ar([
       sweepFreq * \tune.kr(1) * frequencyBias,
       sweepFreq / \tune.kr * frequencyBias],
       feedback: \harmonics.kr(0.25));
     var env = Env.perc(\attack.kr, \release.kr(0.5)).ar(doneAction: 2);
-    var sound = Safe.ar(sin.lincurve(-1, 1, -1, 1, \curve.kr(4)));
+    var sound = sin.lincurve(-1, 1, -1, 1, \curve.kr(4));
+    sound = sound * \amp.kr(-6).dbamp;
     OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, \pan.kr(0), env))
   }).add;
   d.kraut = z;
