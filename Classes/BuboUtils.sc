@@ -15,12 +15,20 @@ BuboUtils {
   *cleanSampleName {
     arg str;
     var good_string;
-    if (str == nil, { ^nil });
+    if (str == nil, { ^"" });
 	  good_string = str.asList.collect({
 	  	|char|
 	  	if (char.isAlphaNum, char, "")
 	  }).join;
     ^good_string
+  }
+
+  *stringIsNumber {
+    arg string;
+    if (string == nil, { ^true });
+    string = string.asList.collect({arg char; char.ascii});
+    string = (48..57).includesAll(string);
+    ^string
   }
 
   *cleanSampleIndex {

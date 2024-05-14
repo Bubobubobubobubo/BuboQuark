@@ -54,9 +54,8 @@ EventShortener {
           if (type !== 'midi', {
             if (pattern.includes('i') || pattern.includes('instrument') == false, {
               new_pattern = new_pattern ++ [
-                sp: Pfunc { |e| e.str ? 'default' },
-                nb: Pfunc(\num),
-                instrument: 'default',
+                sp: Pfunc { |e| e.str ? "" },
+                nb: Pfunc { |e| e.num ? 0 },
                 fast: 1,
               ];
             });

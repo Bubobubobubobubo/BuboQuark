@@ -37,7 +37,25 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 ~plop.play;
 )
 
-Bank.list
+
+// TEST: Cinquième test
+(
+~testInstrument => [
+  instrument: 'default',
+  pat: "0 2 3 4"
+];
+~testInstrument.play;
+)
+
+// TEST: Sixième test
+// WARNING: celui-ci crashe !
+(
+~testInstrument => [
+  pat: "0 2 3 4"
+];
+~testInstrument.play;
+)
+
 
 Sweep.help
 
