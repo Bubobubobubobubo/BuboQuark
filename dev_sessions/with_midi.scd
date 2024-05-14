@@ -190,24 +190,3 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 });
 ~apply.play;
 )
-
-Main.elapsedTime
-
-(
-d.formatTime = {
-  arg seconds = 0;
-  var hours = seconds / 3600;
-  var minutes = (seconds % 3600) / 60;
-  var secs = (seconds % 60);
-  hours = hours.asString.padLeft(2, $0);
-  minutes = minutes.asString.padLeft(2, $0);
-  secs = secs.asString.padLeft(2, $0);
-  ^hours ++ ":" ++ minutes ++ ":" ++ secs
-};
-)
-
-d.formatTime
-
-d.formatTime(20).postln;
-
-

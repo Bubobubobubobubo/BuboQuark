@@ -5,7 +5,11 @@ BuboUtils {
     var hours = (time / 3600).asInteger;
     var minutes = ((time % 3600) / 60).asInteger;
     var secs = (time % 60).asInteger;
-    ^("%:%:%".format(hours, minutes, secs))
+    ^("%:%:%".format(
+      hours.asString.padLeft(2, "0"),
+      minutes.asString.padLeft(2, "0"),
+      secs.asString.padLeft(2, "0"))
+    )
   }
 
   *banner {
