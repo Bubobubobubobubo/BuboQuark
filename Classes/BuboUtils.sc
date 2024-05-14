@@ -1,5 +1,13 @@
 BuboUtils {
 
+  *timer {
+    var time = Main.elapsedTime;
+    var hours = (time / 3600).asInteger;
+    var minutes = ((time % 3600) / 60).asInteger;
+    var secs = (time % 60).asInteger;
+    ^("%:%:%".format(hours, minutes, secs))
+  }
+
   *banner {
     var banner = "┳┓  ┓   ┳┓  ┓    ┳┓\n"
                  "┣┫┓┏┣┓┏┓┣┫┓┏┣┓┏┓ ┣┫┏┓┏┓╋\n"

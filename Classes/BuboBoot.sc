@@ -70,20 +70,25 @@ Boot {
 
     *installServerTreeBehavior {
       CmdPeriod.add({
-        BuboUtils.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
-         this.clock.tempo * 60, this.clock.numPeers, Server.default.avgCPU.round(2), Server.default.peakCPU.round(2)), 40);
+      BuboUtils.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
+       this.clock.tempo * 60,
+       this.clock.numPeers,
+       Server.default.avgCPU.round(2),
+       Server.default.peakCPU.round(2)),
+       40
+      );
 
          // This Routine prints the current server state
-         Tdef(\log, {
-         	loop {
-         		"TP: %/% CPU: %".format(
-              TempoClock.default.bar,
-              TempoClock.default.beats,
-              Server.default.avgCPU
-            ).postln;
-         		1.0.wait;
-         	}
-         }).play;
+      Tdef(\log, {
+      	loop {
+       		"[TIME: %] | [TP: %/%] | [CPU: % ]".format(
+            BuboUtils.timer(),
+            TempoClock.default.bar, TempoClock.default.beats,
+            Server.default.avgCPU.asInteger
+          ).postln;
+       		1.0.wait;
+       	}
+      }).play;
 
       }, Server.default);
 
