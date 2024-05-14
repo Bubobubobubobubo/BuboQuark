@@ -83,7 +83,8 @@ Boot {
       	loop {
        		"[TIME: %] | [TP: %/%] | [CPU: % ]".format(
             BuboUtils.timer(),
-            TempoClock.default.bar, TempoClock.default.beats,
+            TempoClock.default.bar,
+            TempoClock.default.beats % TempoClock.default.beatsPerBar + 1,
             Server.default.avgCPU.asInteger
           ).postln;
        		1.0.wait;
