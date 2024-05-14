@@ -156,11 +156,11 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 
 
 (
-~ground => [pat: "[kick:2(5,16)/16, fgood:11/2]", release: 4];
-~snare => [pat: "[~ snare]/16", release: 4];
+~ground => [pat: "[kick:2(5,16)/16, fgood:11/2]", release: 4, quant: 4];
+~snare => [pat: "[~ snare]/16", release: 4, quant: 4];
 ~snare.fx1(0.7, {arg in; MiVerb.ar(in, time: 0.7)});
 ~hat => [pat: "[sound:2|hat:5] hat:2 hat:3!2", release: 1/32,
-  amp: [0.0,-12.0].pwhite(inf)
+  amp: [0.0,-12.0].pwhite(inf), quant: 4
 ];
 ~hat.play;
 ~snare.play;
@@ -171,11 +171,13 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
   amp: -12, curve: -2, tune: [0, [2, 4, 8].pseq(inf)],
   release: {LFNoise0.kr(c.dur).range(0.1, 1)} * 4,
   scale: Scale.chromatic,
+  quant: 4,
   modSpeed: 8, pat: "[0(5,8) 3(5,8)]/8",
 ];
 ~vorb.play;
 ~apply => [
   instrument: 'kraut',
+  quant: 4,
   octave: [5, 6].pxrand(inf),
   amp: -12, curve: -2, tune: 2,
   release: {LFNoise0.kr(c.dur).range(0.1, 1)},
@@ -188,6 +190,3 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 });
 ~apply.play;
 )
-
-nil.isNil
-
