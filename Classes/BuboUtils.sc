@@ -14,11 +14,13 @@ BuboUtils {
 
   *cleanSampleName {
     arg str;
+    var good_string;
     if (str == nil, { ^nil });
-	  ^str.asList.collect({
+	  good_string = str.asList.collect({
 	  	|char|
-	  	if (char.isAlpha, char, "")
-	  }).join
+	  	if (char.isAlphaNum, char, "")
+	  }).join;
+    ^good_string
   }
 
   *cleanSampleIndex {

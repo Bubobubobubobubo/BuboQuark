@@ -6,22 +6,35 @@
 // BUG: Evalue moi
 m = MIDIOut.newByName("MIDI", "Bus 1");
 
+// TEST: Premier test
 (
 ~test => [ sp: "kick", nb: 0 ];
 ~test.play;
 )
 
-~test.source.patternpairs
-
+// TEST: Second test
 (
 ~fun => [ pat: "kick:4 snare:3" ];
 ~fun.play;
 )
 
-// NOTE: Pattern sans numéro maintenant !
+// TEST: Troisième test
 (
-~test => [ pat: "[kick hat snare hat]/2" ];
-~test.play;
+~fun => [ pat: "1 2 3 4 5", sp: "hat" ];
+~fun.play;
+)
+
+// TEST: Quatrième test
+(
+~plop => [
+  pat: "[4modular:4 4modular:3 4modular:2 4modular:5]/2",
+  pan: {SinOsc.ar(c.dur/4)}, rate: {
+    Sweep.ar(c.dur / 4, 1).linlin(0, 4, 0, 1, \minmax)
+  }, release: [1, 2, 3, 1].pseq(inf),
+];
+~plop.mold(2);
+~plop.fx1(0.5, {arg in; MiVerb.ar(in, 0.2)});
+~plop.play;
 )
 
 Bank.list
@@ -33,13 +46,16 @@ Sweep.help
   pat: "[kick:11(3,8)/2, hat:4(5,8)/2, fsnare:2(1,8)/4]",
   rate: [1, 0.5], release: 0.5,
 ];
+~rhythm.play;
 ~rhythm.fx1(0.1, {
   arg in;
   var sound = CombC.ar(in, 2, c.dur / 4, LFNoise0.kr(c.dur * 2).range(0.01, 1));
   sound = MiVerb.ar(sound, time: 0.1);
   sound
 });
-~rhythm.play;
+)
+
+(
 ~basse => [
   pat: "0(5,8)/2",
   i: "kraut",
@@ -56,16 +72,13 @@ Sweep.help
   MiVerb.ar(in, time:0.3)
 });
 ~basse.play;
-~plop => [
-  pat: "[sound:4 4modular:5 sound:6 4modular:8]/4",
-  pan: {SinOsc.ar(c.dur/4)},
-  rate: {
-    Sweep.ar(c.dur / 4, 1).linlin(0, 4, 0, 1, \minmax)
-  }, release: [1, 2, 3, 1].pseq(inf),
-];
-~plop.mold(2);
-~plop.fx1(0.5, {arg in; MiVerb.ar(in, 0.2)});
-~plop.play;
+)
+
+
+
+
+(
+BuboUtils.cleanSampleName("modular4")
 )
 
 // NOTE: changer amp de place cause une erreur (wtf?)
@@ -180,17 +193,41 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 ~hat.play;
 )
 
+(
 ~vorb => [
-  instrument: 'kraut',
-  octave: 4,
-  amp: -12, curve: -2, tune: [0, [2, 4, 8].pseq(inf)],
+  // instrument: 'kraut',
+  octave: 6,
+  pat: "0 2 3 4 5 8"
+];
+~vorb.play;
+)
+
+
+(
+~fault => [ pat: "1 2 3 4", sp: "hat", nb: 4 ];
+~fault.play;
+)
+
+(
+~fault.source.patternpairs
+)
+
+
+(
+~vorb => [
+  instrument: 'kraut', octave: 4,
+  amp: -12, curve: -2,
+  tune: [0, [2, 4, 8].pseq(inf)],
   release: {LFNoise0.kr(c.dur).range(0.1, 1)} * 4,
   scale: Scale.chromatic,
   quant: 4,
   modSpeed: 8, pat: "[0(5,8) 3(5,8)]/8",
 ];
 ~vorb.play;
+)
+
 ~apply => [
+
   instrument: 'kraut',
   quant: 4,
   octave: [5, 6].pxrand(inf),
