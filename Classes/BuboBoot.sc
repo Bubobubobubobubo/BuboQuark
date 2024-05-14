@@ -95,6 +95,10 @@ Boot {
 
       Event.addEventType(\buboLoopEvent, {
         arg server;
+        [~sp, ~nb].postln;
+        ~sp = BuboUtils.cleanSampleName(~sp);
+        ~nb = BuboUtils.cleanSampleIndex(~nb);
+        [~sp, ~nb].postln;
         if (~sp.notNil && ~nb.notNil, {
           ~sp = ~sp ?? 'default';
           ~nb = ~nb ?? 0;
@@ -111,18 +115,21 @@ Boot {
 
       Event.addEventType(\buboEvent, {
         arg server;
+        ~sp = BuboUtils.cleanSampleName(~sp);
+        ~nb = BuboUtils.cleanSampleIndex(~nb);
         if (~sp.notNil && ~nb.notNil, {
-          ~sp = ~sp ?? 'default';
-          ~nb = ~nb ?? 0;
-          ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
-          if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
-              ~instrument = \player;
-          } {
-              ~instrument = \splayer;
-          };
+          if (~sp != "", {
+            ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
+            if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
+                ~instrument = \player;
+            } {
+                ~instrument = \splayer;
+            };
+          })
         });
         ~type = \note;
         currentEnvironment.play;
       });
     }
+
 }

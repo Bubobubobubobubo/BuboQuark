@@ -12,6 +12,20 @@ BuboUtils {
     )
   }
 
+  *cleanSampleName {
+    arg str;
+    if (str == nil, { ^nil });
+	  ^str.asList.collect({
+	  	|char|
+	  	if (char.isAlpha, char, "")
+	  }).join
+  }
+
+  *cleanSampleIndex {
+    arg number;
+    if (number.isKindOf(Number), { ^number }, { ^0 });
+  }
+
   *banner {
     var banner = "┳┓  ┓   ┳┓  ┓    ┳┓\n"
                  "┣┫┓┏┣┓┏┓┣┫┓┏┣┓┏┓ ┣┫┏┓┏┓╋\n"
@@ -39,4 +53,3 @@ BuboUtils {
     });
   }
 }
-

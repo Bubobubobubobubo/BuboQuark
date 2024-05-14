@@ -2,7 +2,7 @@ Bank : Singleton {
     classvar <>root, <>extensions, <>lazyLoading=true;
     var <paths, buffers, <channels, <foundRoot, <foundRootModTime, markersCache, atCache;
     var metadata;
-    
+
     *initClass {
         root = "/Users/bubo/.config/livecoding/samples".standardizePath;
         extensions = ["wav", "aiff", "aif", "flac", "ogg"];
@@ -13,45 +13,56 @@ Bank : Singleton {
       arg item; item.folderName.postln;
       })
     }
-    
+
+    *contains {
+      arg sample;
+      var folderNames = PathName(Bank.root).entries.collect({
+        arg item;
+        if (item.folderName == sample) {
+          ^true
+        }
+      });
+      ^false;
+    }
+
     *new {
         |path, channels|
         ^super.new(path, channels);
     }
-    
+
     size {
         ^paths.size
     }
-    
+
     printOn {
         |stream|
         super.printOn(stream);
         stream << "[%]".format(paths.size)
     }
-    
+
     init {
         var currentRoot, currentExtensions, foundPaths=[], attempts = List();
         var fixedName;
-        
+
         buffers = [];
         ServerQuit.add(this);
         ServerBoot.add(this);
-        
+
         fixedName = name.asString
             .replace("[", "\\[")
             .replace("]", "\\]")
             .replace("(", "\\(")
             .replace(")", "\\)");
-        
+
         if (foundRootModTime.notNil) {
             if (foundRoot.notNil and: { File.exists(foundRoot) } and: { File.mtime(foundRoot) == foundRootModTime }) {
                 ^this; // no changes, so early return!
             }
         };
-        
+
         currentExtensions = this.class.extensions;
         currentRoot = thisProcess.nowExecutingPath;
-        
+
         // Try an absolute path resolve first
         foundPaths = Require.resolvePaths(fixedName, [], currentExtensions, attempts);
         if (foundPaths.isEmpty.not) {
@@ -61,23 +72,23 @@ Bank : Singleton {
                 currentRoot = PathName(currentRoot).parentPath;
                 foundPaths = Require.resolvePaths(fixedName, currentRoot, currentExtensions, attempts);
             };
-            
+
             if (foundPaths.isEmpty and: { currentRoot.notNil }) {
                 currentRoot = currentRoot +/+ fixedName.asString;
                 foundPaths = Require.resolvePaths("*", currentRoot, currentExtensions, attempts);
             };
-            
+
             if (foundPaths.isEmpty) {
                 currentRoot = this.class.root;
                 foundPaths = Require.resolvePaths(fixedName, currentRoot, currentExtensions, attempts);
             };
-            
+
             if (foundPaths.isEmpty) {
                 currentRoot = currentRoot +/+ fixedName;
                 foundPaths = Require.resolvePaths("*", currentRoot, currentExtensions, attempts);
             };
         };
-        
+
         if (foundPaths.isEmpty) {
             foundRoot = nil;
             foundRootModTime = nil;
@@ -90,7 +101,7 @@ Bank : Singleton {
             foundRoot = currentRoot;
             foundRootModTime = File.mtime(foundRoot) ?? {0};
         };
-        
+
         foundPaths = foundPaths.sort({
             |a, b|
             var pair;
@@ -108,12 +119,12 @@ Bank : Singleton {
                 pair[0] < pair[1]
             } ?? { false }
         });
-        
+
         atCache = ();
         paths = foundPaths;
         this.metadata;
     }
-    
+
     prGetMetadata {
         ^paths.collect {
             |path|
@@ -131,7 +142,7 @@ Bank : Singleton {
             };
         }
     }
-    
+
     metadata {
         |key|
         metadata = metadata ?? this.prGetMetadata(_);
@@ -141,7 +152,7 @@ Bank : Singleton {
             ^metadata[this.indexForKey(key)]
         }
     }
-    
+
     lazyLoading_{
         |lazy|
         if (lazyLoading != lazy) {
@@ -149,20 +160,20 @@ Bank : Singleton {
             this.prUpdateBuffers();
         }
     }
-    
+
     buffers {
         ^paths.size.collect {
             |i|
             this.bufferAt(i)
         }
     }
-    
+
     gui {
         var view, sampleViews, button, name;
         var playNode;
-        
+
         this.lazyLoading = false;
-        
+
         view = View().layout_(GridLayout.rows());
         paths.do {
             |path, i|
@@ -196,7 +207,7 @@ Bank : Singleton {
             );
             sampleViews = sampleViews.add(sampleView);
         };
-        
+
         view.keyUpAction = {
             |view, char, modifiers, unicode, keycode, key|
             switch(
@@ -215,10 +226,10 @@ Bank : Singleton {
                 }
             )
         };
-        
+
         ScrollView(bounds:500@600).canvas_(view).front;
     }
-    
+
     set {
         |inChannels|
         if (channels != inChannels) {
@@ -227,13 +238,13 @@ Bank : Singleton {
             this.prUpdateBuffers();
         };
     }
-    
+
     clear {
         paths = [];
         atCache = ();
         this.prUpdateBuffers();
     }
-    
+
     bufferAt {
         |index|
         var sf;
@@ -249,20 +260,20 @@ Bank : Singleton {
                         buffers[index] = Buffer.readChannel(Server.default, paths[index], channels:Array.series(channels));
                     };
                 };
-                
+
                 buffers[index];
             }
         }
     }
-    
+
     indexForKey {
         |key|
         var index;
-        
+
         if (key.isArray && key.isString.not) {
             ^key.collect(this.at(_))
         };
-        
+
         if (key.isInteger) {
             index = key
         } {
@@ -277,15 +288,15 @@ Bank : Singleton {
                 atCache[key.asSymbol] = index;
             }
         };
-        
+
         ^index
     }
-    
+
     at {
         |key|
         ^this.bufferAt(this.indexForKey(key));
     }
-    
+
     markers {
         ^markersCache ?? {
             markersCache = paths.collect({
@@ -294,7 +305,7 @@ Bank : Singleton {
             })
         }
     }
-    
+
     wrapAt {
         |index|
         if (index.isInteger) {
@@ -302,10 +313,10 @@ Bank : Singleton {
         };
         ^this.at(index);
     }
-    
+
     do 			{ |...args| buffers.size.collect(this.bufferAt(_)).do(*args) }
     collect 	{ |...args| ^buffers.size.collect(this.bufferAt(_)).collect(*args) }
-    
+
     prUpdateBuffers {
         if (Server.default.serverBooting or: {
             Server.default.hasBooted && Server.default.serverRunning.not
@@ -315,18 +326,18 @@ Bank : Singleton {
             };
             ^this;
         };
-        
+
         if (Server.default.serverRunning.not) {
             buffers = [];
         } {
             if (paths.size > buffers.size) { buffers = buffers.extend(paths.size) };
-            
+
             paths.do {
                 |path, i|
                 var buffer;
-                
+
                 buffer = buffers[i];
-                
+
                 if (path.notNil) {
                     if (lazyLoading.not) {
                         this.bufferAt(i)
@@ -338,7 +349,7 @@ Bank : Singleton {
                     }
                 }
             };
-            
+
             buffers[paths.size..].do {
                 |b|
                 b.free;
@@ -346,7 +357,7 @@ Bank : Singleton {
             buffers.extend(paths.size);
         }
     }
-    
+
     doOnServerBoot {
         if (paths.size > 0) {
             buffers = [];
@@ -354,27 +365,27 @@ Bank : Singleton {
             "***Loaded samples for %***".format(this.asString).postln;
         }
     }
-    
+
     doOnServerQuit {
         buffers = [];
     }
-    
+
     pat {
         |keyPat|
         ^Pindex(Pseq([this], inf), keyPat)
     }
-    
+
     // Single buffer support
     asBuffer 		{ 				^this.singleSampleWrap(nil) }
     asControlInput  { |...args| 	^this.prSingleSampleWrap(\asControlInput, *args) }
     play 			{ |...args| 	^this.prSingleSampleWrap(\play, *args) }
-    
+
     prSingleSampleWrap {
         |method ...args|
         var buffer;
         if (buffers.size == 1) {
             buffer = this.bufferAt(0);
-            
+
             if (method.isNil) {
                 ^buffer
             } {

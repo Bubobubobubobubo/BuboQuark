@@ -6,16 +6,16 @@
 // BUG: Evalue moi
 m = MIDIOut.newByName("MIDI", "Bus 1");
 
-// NOTE: Pattern rythmique de base
 (
-~test => [ sp: "kick", nb: 0];
+~test => [ sp: "kick", nb: 0 ];
 ~test.play;
 )
 
-// NOTE: Pattern avec Pmini
+~test.source.patternpairs
+
 (
-~test => [ pat: "kick:4 snare:3" ];
-~test.play;
+~fun => [ pat: "kick:4 snare:3" ];
+~fun.play;
 )
 
 // NOTE: Pattern sans numéro maintenant !
@@ -40,8 +40,6 @@ Sweep.help
   sound
 });
 ~rhythm.play;
-)
-
 ~basse => [
   pat: "0(5,8)/2",
   i: "kraut",
@@ -156,15 +154,32 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 
 
 (
-~ground => [pat: "[kick:2(5,16)/16, fgood:11/2]", release: 4, quant: 4];
+~ground => [
+  pat: "[kick:2(5,16)/16, cgood:11/2 lgood:13]*2",
+  release: [4, 2, 1].pseq(inf),
+  quant: 4,
+  // test: Pfunc { |e| e.postln; },
+  // finish: { currentEnvironment.keysValuesDo {
+  //   |key, val|
+  //   "%: %".format(key, val).postln}
+  // },
+];
+~ground.play;
+)
+
+(
 ~snare => [pat: "[~ snare]/16", release: 4, quant: 4];
 ~snare.fx1(0.7, {arg in; MiVerb.ar(in, time: 0.7)});
+~snare.play;
+)
+
+(
 ~hat => [pat: "[sound:2|hat:5] hat:2 hat:3!2", release: 1/32,
   amp: [0.0,-12.0].pwhite(inf), quant: 4
 ];
 ~hat.play;
-~snare.play;
-~ground.play;
+)
+
 ~vorb => [
   instrument: 'kraut',
   octave: 4,
@@ -190,3 +205,35 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 });
 ~apply.play;
 )
+
+
+Bank("default")[0].play
+
+// NOTE: absolute crash (attention !)
+(
+~other => [
+  sp: "synthi", nb: 2,
+  release: 1/4, rate: 0.75,
+  pan: [0.0, 1.0].pwhite,
+];
+~other.mold(2);
+~other.play;
+)
+
+// Faire le point sur la situation : qu'est-ce qui marche et ne marche pas ?
+
+
+// NOTE: Pattern le plus basique
+~a => [sp: "kick", nb: 4];
+~a.play;
+~a.clear;
+
+// NOTE: Pattern avec Pmini
+~a => [pat: "[kick hat snare hat]/2"];
+~a.play;
+~a.clear;
+
+// NOTE: pattern de base, sample mal formée
+// WARNING: le crash se produit ici !
+~a => [sp: "kick:2", nb: 4];
+~a.play;

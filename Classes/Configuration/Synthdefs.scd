@@ -19,7 +19,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       trigger: 1, startPos:startPos,
       loop:\loop.kr(0), doneAction: 2);
   	sig = sig * \amp.kr(-6).dbamp;
-  	sig = Pan2.ar(sig * env, \pan.kr(0));
+  	sig = Pan2.ar(sig * env, \pan.kr(0.0));
     OffsetOut.ar(out, sig)
   }).add;
   d.player = z;
@@ -47,7 +47,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       trigger: 1, startPos:startPos,
       loop:\loop.kr(0), doneAction: 2);
   	sig = sig * \amp.kr(-6).dbamp;
-  	sig = Pan2.ar(sig * env, \pan.kr(0));
+  	sig = Pan2.ar(sig * env, \pan.kr(0.0));
     OffsetOut.ar(out, sig)
   }).add;
   d.splayer = z;
