@@ -9,7 +9,8 @@ Boot {
     arg configPath, samplePath, serverOptions;
     var p; var c; var t; var s; var d; var e; var b;
 
-    BuboUtils.fancyPrint(BuboUtils.banner, 40);
+    40.do({Post.nl});
+    BuboUtils.banner().postln;
     Server.killAll;
     MIDIClient.init;
 
@@ -51,61 +52,66 @@ Boot {
 
     // Post actions: installing behavior after server boot
     Server.default.waitForBoot({
+
 	    s.latency = 0.3;
+
       // Resume normal boot sequence
       "-> Loading config from: %".format(configPath ? (this.localPath +/+ "Startup.scd")).postln;
       (configPath ? (this.localPath +/+ "Startup.scd")).load;
-      BuboUtils.fancyPrint(BuboUtils.ready, 40);
+      BuboUtils.ready.postln;
       this.installServerTreeBehavior();
       this.clock.enableMeterSync();
 
-      // Installing Safety for Sound
+      // Installing Safety
       Safety.all;
       Safety(s).defName = \safeLimit;
       Safety.setLimit(1);
+
       e = currentEnvironment;
     });
 
     }
 
     *installServerTreeBehavior {
+      40.do({Post.nl});
       CmdPeriod.add({
-      BuboUtils.fancyPrint("\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
-       this.clock.tempo * 60,
-       this.clock.numPeers,
-       Server.default.avgCPU.round(2),
-       Server.default.peakCPU.round(2)),
-       40
-      );
+        BuboUtils.stop().postln;
+        // Printing session state when the session is stopped
+        "\nBubo SuperCollider Session\nTempo: % | Peers: %\nCPU: %     | Peak: %\n".format(
+         this.clock.tempo * 60,
+         this.clock.numPeers,
+         Server.default.avgCPU.round(2),
+         Server.default.peakCPU.round(2)).postln;
 
-         // This Routine prints the current server state
-      Tdef(\log, {
-      	loop {
-       		"[TIME: %] | [TP: %/%] | [CPU: % ]".format(
-            BuboUtils.timer(),
-            TempoClock.default.bar,
-            TempoClock.default.beats % TempoClock.default.beatsPerBar + 1,
-            Server.default.avgCPU.asInteger
-          ).postln;
-       		1.0.wait;
-       	}
-      }).play;
-
+      //   // This Routine prints the current server state
+      //   Tdef(\log, {
+      //   	loop {
+      //    		"[TIME: %] | [TP: %/%] | [CPU: % ]".format(
+      //         BuboUtils.timer(),
+      //         TempoClock.default.bar,
+      //         TempoClock.default.beats % TempoClock.default.beatsPerBar + 1,
+      //         Server.default.avgCPU.asInteger
+      //       ).postln;
+      //    		1.0.wait;
+      //    	}
+      //   }).play;
       }, Server.default);
 
       Event.addEventType(\buboLoopEvent, {
         arg server;
-        ~sp = BuboUtils.cleanSampleName(~sp);
-        ~nb = BuboUtils.cleanSampleIndex(~nb);
-        if (~sp.notNil && ~nb.notNil, {
-          if (~sp != "", {
-            ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
-            if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
-                ~instrument = \looperMono;
-            } {
-                ~instrument = \looperStereo;
-            };
-          })
+        if (BuboUtils.stringIsNumber(~sp), {}, {
+          ~sp = BuboUtils.cleanSampleName(~sp);
+          ~nb = BuboUtils.cleanSampleIndex(~nb);
+          if (~sp.notNil && ~nb.notNil, {
+            if (~sp !== "", {
+              ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
+              if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
+                  ~instrument = \looperMono;
+              } {
+                  ~instrument = \looperStereo;
+              };
+            })
+          });
         });
         ~type = \note;
         currentEnvironment.play;
@@ -113,7 +119,6 @@ Boot {
 
       Event.addEventType(\buboEvent, {
         arg server;
-        [~sp, ~nb, ~instrument].postln;
         if (BuboUtils.stringIsNumber(~sp), {}, {
           ~sp = BuboUtils.cleanSampleName(~sp);
           ~nb = BuboUtils.cleanSampleIndex(~nb);
@@ -132,5 +137,4 @@ Boot {
         currentEnvironment.play;
       });
     }
-
 }

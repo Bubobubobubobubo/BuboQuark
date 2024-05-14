@@ -37,17 +37,26 @@ BuboUtils {
   }
 
   *banner {
-    var banner = "┳┓  ┓   ┳┓  ┓    ┳┓\n"
-                 "┣┫┓┏┣┓┏┓┣┫┓┏┣┓┏┓ ┣┫┏┓┏┓╋\n"
-                 "┻┛┗┻┗┛┗┛┻┛┗┻┗┛┗┛ ┻┛┗┛┗┛┗";
+    var banner = "┳┓  ┓   ┏┓      ┓    ┓   ┓   ┓\n"
+                 "┣┫┓┏┣┓┏┓┃┃┓┏┏┓┏┓┃┏  •┃  •┃  •┃\n"
+                 "┻┛┗┻┗┛┗┛┗┻┗┻┗┻┛ ┛┗  •┛  •┛  •┛\n"
+                 "This is my beloved SuperCollider setup\n"
+                 "Enjoy, have fun: [ raphaelforment.fr ] \n";
     ^banner
-  }
+ }
 
   *ready {
-    var ready = "┓ ┳┓┏┏┓  ┏┓┏┓┳┓┏┓  ┳┓┏┓┏┓┳┓┓┏\n"
-                "┃ ┃┃┃┣   ┃ ┃┃┃┃┣   ┣┫┣ ┣┫┃┃┗┫\n"
-                "┗┛┻┗┛┗┛  ┗┛┗┛┻┛┗┛  ┛┗┗┛┛┗┻┛┗┛";
+    var ready = "┓•          ┓             ╻\n"
+                "┃┓┓┏┏┓  ┏┏┓┏┫┏┓  ┏┓┏┓┓┏┏  ┃\n"
+                "┗┗┗┛┗   ┗┗┛┗┻┗   ┛┗┗┛┗┻┛  •\n";
     ^ready
+  }
+
+  *stop {
+    var stop="    ╻╻  ┏┓    •   ╻╻\n"
+             "    ┃┃  ┃┃┏┓┏┓┓┏  ┃┃\n"
+             "    ••  ┣┛┗┻┛┗┗┗  ••\n";
+    ^stop
   }
 
   *fancyPrint {
