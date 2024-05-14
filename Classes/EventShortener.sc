@@ -4,68 +4,145 @@ EventShortener {
     arg pattern, key, type, time;
     var new_pattern;
     var additionalKeys = Dictionary.newFrom([
-      \midi, [
-        type: \midi,
-        midiCmd: \noteOn,
-      ],
-      \buboEvent, [
-        type: \buboEvent,
-      ],
-      \looper, [
-          type: \buboLoopEvent,
-          legato: 1, time: time
-      ],
-      \pmono, [],
+      \looper, [type: \buboLoopEvent, legato: 1, time: time],
     ]);
     new_pattern = this.findShortcuts(pattern);
     new_pattern = this.functionsToNdef(new_pattern, key);
-    new_pattern = new_pattern ++ additionalKeys[type];
-    if (pattern.includes('pat'), {
-      new_pattern = this.patternize(new_pattern, type);
+    new_pattern = switch(type,
+      'pmono', this.patternPmono(new_pattern),
+      'buboEvent', this.patternBuboEvent(new_pattern),
+      'midi', this.patternMidi(new_pattern),
+      'midicc', this.patternMidiCC(new_pattern),
+      'looper', this.patternLooper(new_pattern),
+    );
+    ^new_pattern
+  }
+
+  *patternLooper {
+    arg pattern;
+    ^pattern
+  }
+
+  *patternPmono {
+    arg pattern;
+    var new_pattern = List();
+    new_pattern = new_pattern ++ pattern[0];
+    pattern = pattern[1..];
+    pattern.doAdjacentPairs({ | a, b, index |
+      if (index % 2 == 0, {
+        if (a === 'pat', {
+          var temp = Pmini(b);
+          new_pattern = new_pattern ++ [
+            [\trig, \delta, \dur, \str, \num], Pmini(b),
+          ];
+          new_pattern = new_pattern ++ [
+            degree: Pfunc({ |e| e.str.asInteger });
+          ];
+        }, {
+          new_pattern = new_pattern ++ [a, b];
+        });
+      });
     });
     ^new_pattern
   }
 
-  *patternize {
-    arg pattern, type;
+  *patternBuboEvent {
+    arg pattern;
     var new_pattern = List();
-    pattern.doAdjacentPairs({
-      arg a, b, index;
+    new_pattern = new_pattern ++ [\type, 'buboEvent'];
+
+    pattern.doAdjacentPairs({ | a, b, index |
       if (index % 2 == 0, {
         if (a === 'pat', {
           var temp = Pmini(b);
-          var additionalKeys;
-          if (type == 'midi', {
-            additionalKeys = [\trig, \delta, \dur, \str];
-            new_pattern = new_pattern ++ [\type, 'midi'];
-          }, {
-            additionalKeys = [\trig, \delta, \dur, \str, \num];
-          });
-          new_pattern = new_pattern ++ [additionalKeys, temp];
+          new_pattern = new_pattern ++ [
+            [\trig, \delta, \dur, \str, \num], Pmini(b),
+          ];
           new_pattern = new_pattern ++ [
             degree: Pfunc({ |e|
               if (e.trig > 0, {
                 e.str.asInteger
               }, {
                 \rest
-              }
-            )});
-          ];
-          if (type !== 'midi', {
-            if (pattern.includes('i') || pattern.includes('instrument') == false, {
-              new_pattern = new_pattern ++ [
-                sp: Pfunc { |e| e.str ? "" },
-                nb: Pfunc { |e| e.num ? 0 },
-                fast: 1,
-              ];
+              });
             });
-          })
+          ];
         }, {
           new_pattern = new_pattern ++ [a, b];
         });
-      })
+      });
+    });
+
+    if (pattern.includes('i') || pattern.includes('instrument') == false, {
+      new_pattern = new_pattern ++ [
+        sp: Pfunc { |e| e.str ? "" },
+        nb: Pfunc { |e| e.num ? 0 }
+      ];
     });
     ^new_pattern
+  }
+
+  *patternMidi {
+    arg pattern;
+    var new_pattern = List();
+    new_pattern = new_pattern ++ [\type, 'midi', \midicmd, \noteOn];
+    pattern.doAdjacentPairs({ | a, b, index |
+      if (index % 2 == 0, {
+        if (a === 'pat', {
+          var temp = Pmini(b);
+          new_pattern = new_pattern ++ [ [\trig, \delta, \dur, \str, \num], Pmini(b) ];
+          new_pattern = new_pattern ++ [
+            degree: Pfunc({ |e|
+              if (e.trig > 0, {
+                e.str.asInteger
+              }, {
+                \rest
+              });
+            });
+          ];
+        }, {
+          new_pattern = new_pattern ++ [a, b];
+        });
+      });
+    });
+    ^new_pattern
+  }
+
+  *patternMidiCC {
+    arg pattern;
+    var new_pattern = List();
+    // The base requirement for a message to be considered CC
+    new_pattern = new_pattern ++ [
+      \type: 'midi',
+      \midicmd: 'control'
+    ];
+    pattern.doAdjacentPairs({
+      arg a, b, index;
+      if (index % 2 == 0, {
+        if (a === 'pat', {
+          var temp = Pmini(b);
+          new_pattern = new_pattern ++ [
+            [\trig, \delta, \dur, \str], Pmini(b),
+          ];
+          new_pattern = new_pattern ++ [
+            val: Pfunc({ |e|
+              if (e.trig > 0, {
+                e.str.asInteger
+              }, {
+                \rest
+              });
+            });
+          ];
+        }, {
+          new_pattern = new_pattern ++ [a, b];
+        });
+      });
+   });
+   new_pattern = new_pattern ++ [
+     'ctlNum': Pkey(\num),
+     'control': Pfunc { |e| e.val.asInteger },
+   ]
+   ^new_pattern
   }
 
   *functionsToNdef {
@@ -78,7 +155,7 @@ EventShortener {
       }, {
         new_pattern.add(element)
       });
-    })
+    });
     ^new_pattern
   }
 
@@ -90,43 +167,30 @@ EventShortener {
       // Instrument
       \i, \instrument,
       // Notes
-      \n, \note,
-      \mn, \midinote,
-      \vel, \velocity,
-      \deg, \degree,
-      \off, \timingOffset,
-      \o, \octave,
-      \f, \freq,
-      \det, \detune,
+      \n, \note, \mn, \midinote,
+      \vel, \velocity, \deg, \degree,
+      \off, \timingOffset, \o, \octave,
+      \f, \freq, \det, \detune,
       // Durations
-      \d, \dur,
-      \l, \legato,
+      \d, \dur, \l, \legato,
       // Amplitude
       \p, \pan,
       // Envelope
-      \a, \attack,
-      \d, \decay,
-      \s, \sustain,
-      \r, \release,
+      \a, \attack, \d, \decay,
+      \s, \sustain, \r, \release,
       // Filter control
-      \r, \resonance,
-      \ff, \ffreq,
+      \r, \resonance, \ff, \ffreq,
       // Modulation
-      \m, \mod,
-      \mo, \midout,
-      \c, \midichan,
-      \st, \stretch,
-      \rt, \root,
-      \scl, \scale,
+      \m, \mod, \mo, \midout,
+      \c, \midichan, \st, \stretch,
+      \rt, \root, \scl, \scale,
   	]);
-
 		pattern.do({| element, i |
 			if (short.includesKey(element),
 				{correctedPattern.add(short[element])},
 				{correctedPattern.add(element)}
 			);
 		});
-
 		^correctedPattern;
 	}
 }

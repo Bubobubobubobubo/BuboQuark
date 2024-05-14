@@ -56,18 +56,44 @@
       ^this
     }
 
+    /* MIDI CC Operator */
+    >>+ {
+      arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
+      "Fonction Control Change".postln;
+      pattern = EventShortener.process(
+        pattern, this.key, 'midicc', 0
+      );
+      this[0] = Pbind(*pattern);
+      this[0].patternpairs.postln;
+      this.prepareToPlay(this, quant, fade);
+      ^this
+    }
+
     /* Player syntax sugar */
     => {
       arg pattern;
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.process(
-        pattern, this.key, \buboEvent, 0
-      );
-      pattern = EffectChain.process(
-        pattern, this.key
-      );
+      pattern = EventShortener.process(pattern, this.key, 'buboEvent', 1);
+      pattern = EffectChain.process(pattern, this.key);
       this[0] = Pbind(*pattern);
+      this.prepareToPlay(this, quant, fade);
+      ^this
+    }
+
+    /* Pmono player */
+    -> {
+      arg pattern;
+      var quant = this.getQuantFromPattern(pattern);
+      var fade = this.getFadeFromPattern(pattern);
+      pattern = EventShortener.process(pattern, this.key, 'pmono', 1);
+      pattern.do({
+        arg i;
+        i.postln;
+      });
+      this[0] = Pmono(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this
     }
@@ -88,18 +114,6 @@
       ^this
     }
 
-    /* Pmono player */
-    -> {
-      arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
-      pattern = EventShortener.process(
-        pattern, this.key, 'pmono', 0
-      );
-      this[0] = Pmono(*pattern);
-      this.prepareToPlay(this, quant, fade);
-      ^this
-    }
 
     getValueFromPattern {
       arg pattern, key, default;
