@@ -108,7 +108,7 @@ You will have to adapt the operator (_e.g_ `=>`) to the type of pattern you want
 ~comp => [pat: "[snare casio]/2", fade: 4, quant:8];
 ```
 
-You **cannot escape** learning the SuperCollider syntax and/or JITLib. The management of pattern is done using the regular syntax:
+You **cannot escape** learning the SuperCollider syntax and/or JITLib. Pattern management is done using the regular syntax:
 
 ```cpp
 ~comp => [pat: "[snare casio]/2", fade: 4, quant:8];
@@ -124,7 +124,7 @@ You **cannot escape** learning the SuperCollider syntax and/or JITLib. The manag
 
 #### Patterning
 
-It is sometimes hard to write patterns on-the-fly using SuperCollider. The pattern library is powerful and infinitely rewarding but the syntax is.. rather verbose. I am kicking open doors here, everybody knows about this, there is just no real incentive to change, SuperCollider is not only for live coders but also for composers and other creative coders that don't need to alter stuff on-the-fly. Let's accept it as it is and move forward by making sure that we stay compatible with the base library. Please, [read the tutorial](https://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html) that comes included with SuperCollider. It will teach you everything there is to known about SuperCollider Events and patterns. BuboQuark is including a few batteries to deal with patterns:
+It is sometimes hard to write patterns on-the-fly using SuperCollider. The pattern library is powerful and infinitely rewarding but the syntax is.. rather verbose. I am kicking open doors here, everybody knows about this, there is just no real incentive to change. SuperCollider is not used only by live coders but also by music composers, scientists and other creative coders that don't need to alter stuff on-the-fly. Let's accept it as it is and move forward by making sure that we stay compatible with the base library. Please, [read the tutorial](https://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html) that comes included with SuperCollider. It will teach you everything there is to known about SuperCollider Events and patterns. BuboQuark is including a few batteries to deal with patterns:
 - [Pmini](https://github.com/j0py/Pmini): TidalCycles mini-notation look-alike
 - [Pdv](https://github.com/dmorgan-github/Pdv): same thing, but a different flavour
 - various pattern shortcuts using Arrays (_e.g_, `[1, 2].pseq(inf)`)
@@ -162,6 +162,20 @@ The `pat` key/value you can use in patterns makes use of [Pmini](https://github.
 ```
 
 You will need to learn the Tidal mini-notation syntax to be proficient with this mini-notation syntax. This is something that can be learned quite easily just by experimenting with samples and synthesizers. Note that Pmini sometimes behave a bit differently compared to the base Tidal. It is not a 100% accurate software port. For my use-case, this is more than enough!
+
+The same thing applies if you prefer using `Pdv`. You can take any string and call the `.p` method on it: 
+
+```cpp
+(
+~test => [
+  instrument: "Panalog", octave: 6,
+  degree: "0 2 4 [5 7]".p,
+];
+~test.play;
+)
+```
+
+Other pattern tweaks are _discoverable_ by reading the source.
 
 ## A small tour of possible pattern types
 
