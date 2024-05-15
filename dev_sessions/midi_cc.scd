@@ -9,9 +9,8 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 ~test >> [
   midiout: m,
   degree: [0, 2, 4, 5].pxrand(inf),
-  chan: 1,
-  dur: [5,8,0].eu / 4, octave: 5,
-  amp: 1/2,
+  chan: 1, dur: [5,8,0].eu / 4,
+  octave: 5, amp: 1/2,
 ];
 ~test.play;
 )
@@ -44,33 +43,29 @@ m = MIDIOut.newByName("MIDI", "Bus 1");
 (
 m = MIDIOut.newByName("MIDI", "Bus 1");
 ~test >> [
-  pat: "[0 3 5 3, [0,<3 5>,<7 10>]]/2",
+  scale: Scale.dorian,
+  pat: "<[[0, 3, 6] 1 2 3] [[0, 4, 7] 5 6 7]>/2",
   midiout: m,
   amp: [0.0, 1.0].pwhite(inf),
-  octave: 4,
-  chan: [0, 1].pxrand(inf),
-  release: 0.125/4,
-  legato: 0.1,
+  octave: [6], legato: 0.5,
+  chan: 1, release: 1/8,
 ];
 ~test.play;
-)
-
-// NOTE: Je vais jouer avec jusqu'à ce qu'il casse
-(
-m = MIDIOut.newByName("MIDI", "Bus 1");
-~a = Pbind(
-  \type, \midi,
-  \midicmd, \control,
-  \ctlNum, [20,25].pseq(inf),
-  // chan est optionnel
-  \midiout, m,
-  \dur, [1,1/2].pseq(inf),
-  \val, Pseq([50, 100], inf),
-  \test, Pfunc {
-    |e| e.postln; e
-  }
-);
-~a.play;
+~other >> [
+  scale: Scale.dorian,
+  pat: "<[[0, 3, 6] 1 2 3] [[0, 4, 7] 5 6 7]>",
+  midiout: m,
+  amp: [0.0, 1.0].pwhite(inf),
+  octave: [
+    [5, 5, 6].pseq(8),
+    [4, 5, 7].pseq(8),
+  ].pseq(inf),
+  legato: 0.5,
+  chan: 1, release: 1/8,
+];
+~other.play;
+~ground => [pat: "[kick:3!2, snare:3]/2", amp: 12];
+~ground.play;
 )
 
 (
@@ -93,28 +88,3 @@ SynthDef('acid', {
 )
 
 ~acid.source
-
-(
-~a = Pmono(
-  'acid', \freq, [100, 150, 200, 400].pxrand(inf),
-  \dur, 1/2,
-);
-~a.play;
-)
-
-(
-~a = Pmono(*[
-  'acid', freq: [100, 150, 200, 400].pxrand(inf),
-  dur: 1/2,
-]);
-~a.play;
-)
-
-(
-a = Pmono(
-  'acid', \note, [0, 2].pseq(inf),
-  \dur, [1, 1/2].pxrand(inf),
-  \release, 0.12
-);
-a.play;
-)

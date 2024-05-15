@@ -89,10 +89,6 @@
       var quant = this.getQuantFromPattern(pattern);
       var fade = this.getFadeFromPattern(pattern);
       pattern = EventShortener.process(pattern, this.key, 'pmono', 1);
-      pattern.do({
-        arg i;
-        i.postln;
-      });
       this[0] = Pmono(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this

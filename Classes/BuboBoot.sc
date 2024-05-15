@@ -8,11 +8,8 @@ Boot {
   *new {
     arg configPath, samplePath, serverOptions;
     var p; var c; var t; var s; var d; var e; var b;
-
-    40.do({Post.nl});
     BuboUtils.banner().postln;
     Server.killAll;
-    MIDIClient.init;
 
     if (serverOptions == nil, {
       "-> Booting using default server configuration".postln;
@@ -68,12 +65,14 @@ Boot {
       Safety.setLimit(1);
 
       e = currentEnvironment;
+
+      MIDIClient.init;
     });
 
     }
 
     *installServerTreeBehavior {
-      40.do({Post.nl});
+
       CmdPeriod.add({
         BuboUtils.stop().postln;
         // Printing session state when the session is stopped
@@ -82,19 +81,6 @@ Boot {
          this.clock.numPeers,
          Server.default.avgCPU.round(2),
          Server.default.peakCPU.round(2)).postln;
-
-      //   // This Routine prints the current server state
-      //   Tdef(\log, {
-      //   	loop {
-      //    		"[TIME: %] | [TP: %/%] | [CPU: % ]".format(
-      //         BuboUtils.timer(),
-      //         TempoClock.default.bar,
-      //         TempoClock.default.beats % TempoClock.default.beatsPerBar + 1,
-      //         Server.default.avgCPU.asInteger
-      //       ).postln;
-      //    		1.0.wait;
-      //    	}
-      //   }).play;
       }, Server.default);
 
       Event.addEventType(\buboLoopEvent, {
