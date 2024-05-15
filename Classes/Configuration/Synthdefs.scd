@@ -271,26 +271,25 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
   d.tides = z;
 );
 
-(
-  z = SynthDef('pink', {
-    arg out;
-    var pink = PinkTrombone.ar(
-      noiseSource: BPF.ar(WhiteNoise.ar(), \noiseFilter.kr(2000)),
-      freq: \freq.kr(800),
-      tenseness: \tenseness.kr(0.4),
-      tongueIndex: \tongueIndex.kr(30),
-      tongueDiameter: \tongueDiameter.kr(3.5),
-      constrictionX: \constrictionX.kr(1.5),
-      constrictionY: \constrictionY.kr(2.5),
-      fricativeIntens: \fricativeIntens.kr(1.5)
-    );
-    var env = Env.perc(\attack.kr(0.01), releaseTime: \release.kr(2.0)).kr(doneAction: 2);
-    var sound = pink * env;
-    OffsetOut.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
-  }).add;
-  d.pink = z;
-);
-
+// (
+//   z = SynthDef('pink', {
+//     arg out;
+//     var pink = PinkTrombone.ar(
+//       noiseSource: BPF.ar(WhiteNoise.ar(), \noiseFilter.kr(2000)),
+//       freq: \freq.kr(800),
+//       tenseness: \tenseness.kr(0.4),
+//       tongueIndex: \tongueIndex.kr(30),
+//       tongueDiameter: \tongueDiameter.kr(3.5),
+//       constrictionX: \constrictionX.kr(1.5),
+//       constrictionY: \constrictionY.kr(2.5),
+//       fricativeIntens: \fricativeIntens.kr(1.5)
+//     );
+//     var env = Env.perc(\attack.kr(0.01), releaseTime: \release.kr(2.0)).kr(doneAction: 2);
+//     var sound = pink * env;
+//     OffsetOut.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
+//   }).add;
+//   d.pink = z;
+// );
 
 (
   z = SynthDef('kick', {

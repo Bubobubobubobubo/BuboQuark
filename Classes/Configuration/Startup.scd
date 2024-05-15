@@ -1,6 +1,5 @@
 // Setting up MIDI for hardware performances
 "Initialising MIDI...".postln;
-MIDIClient.init;
 p = currentEnvironment;
 c = currentEnvironment.clock;
 

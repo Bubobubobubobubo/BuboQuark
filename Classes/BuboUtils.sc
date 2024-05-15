@@ -25,7 +25,7 @@ BuboUtils {
 
   *stringIsNumber {
     arg string;
-    if (string == nil, { ^true });
+    if (string == nil || string == "", { ^false });
     string = string.asList.collect({arg char; char.ascii});
     string = (48..57).includesAll(string);
     ^string

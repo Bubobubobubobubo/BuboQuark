@@ -105,10 +105,10 @@ Boot {
 
       Event.addEventType(\buboEvent, {
         arg server;
-        if (BuboUtils.stringIsNumber(~sp), {}, {
-          ~sp = BuboUtils.cleanSampleName(~sp);
-          ~nb = BuboUtils.cleanSampleIndex(~nb);
-          if (~sp.notNil && ~nb.notNil, {
+        if (~sp.notNil, {
+          if (BuboUtils.stringIsNumber(~sp), {}, {
+            ~sp = BuboUtils.cleanSampleName(~sp);
+            ~nb = BuboUtils.cleanSampleIndex(~nb);
             if (~sp !== "", {
               ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
               if (Bank(~sp).metadata[~nb % Bank(~sp).size][\numChannels] == 1) {
@@ -116,7 +116,7 @@ Boot {
               } {
                   ~instrument = \splayer;
               };
-            })
+            });
           });
         });
         ~type = \note;
