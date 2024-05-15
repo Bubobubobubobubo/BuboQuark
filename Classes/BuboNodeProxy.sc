@@ -46,8 +46,8 @@
     /* Syntax for sending MIDI messages */
     >> {
       arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(
         pattern, this.key, \midi, 0
       );
@@ -59,14 +59,12 @@
     /* MIDI CC Operator */
     >>+ {
       arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
-      "Fonction Control Change".postln;
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(
         pattern, this.key, 'midicc', 0
       );
       this[0] = Pbind(*pattern);
-      this[0].patternpairs.postln;
       this.prepareToPlay(this, quant, fade);
       ^this
     }
@@ -74,8 +72,8 @@
     /* Player syntax sugar */
     => {
       arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(pattern, this.key, 'buboEvent', 1);
       pattern = EffectChain.process(pattern, this.key);
       this[0] = Pbind(*pattern);
@@ -86,8 +84,8 @@
     /* Pmono player */
     -> {
       arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(pattern, this.key, 'pmono', 1);
       this[0] = Pmono(*pattern);
       this.prepareToPlay(this, quant, fade);
@@ -95,11 +93,11 @@
     }
 
     /* Audio Looper (sample playback) */
-    == {
+    ==> {
       // TODO: fix this terrible mess
       arg pattern;
-      var quant = this.getQuantFromPattern(pattern);
-      var fade = this.getFadeFromPattern(pattern);
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
       var nbSlices = this.getValueFromPattern(pattern, 'slices', 1);
       var time = (Pkey(\dur) / Pfunc { currentEnvironment.clock.tempo }) / nbSlices;
       pattern = EventShortener.process(
@@ -108,26 +106,5 @@
       this[0] = Pmono(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this
-    }
-
-
-    getValueFromPattern {
-      arg pattern, key, default;
-      var keyIndex = pattern.indexOf(key);
-      if (keyIndex.notNil) {
-        ^pattern[keyIndex + 1]
-      } {
-        ^default
-      }
-    }
-
-    getQuantFromPattern {
-      arg pattern;
-      ^this.getValueFromPattern(pattern, 'quant', 4)
-    }
-
-    getFadeFromPattern {
-      arg pattern;
-      ^this.getValueFromPattern(pattern, 'fade', 0.01)
     }
 }

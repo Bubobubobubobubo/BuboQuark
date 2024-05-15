@@ -76,7 +76,7 @@ I personally dislike the `Pbind(\qdklsj)` or `Ndef(\qkljsdf)` syntax. The `\` sy
 - Operators for creating SuperCollider patterns on-the-fly:
     -  `=>` (Pbind): basic musical pattern
     -  `->` (Pmono): monophonic expression pattern
-    -  `==` (Looper): looper/sampler (**WIP**, currently broken)
+    -  `==>` (Looper): looper/sampler (**WIP**, currently broken)
     - `>>` (Note): MIDI Note Pattern
     - `>>+` (CC): MIDI CC Pattern
 

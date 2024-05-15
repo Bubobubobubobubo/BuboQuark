@@ -71,4 +71,35 @@ BuboUtils {
       each.postln;
     });
   }
+
+  *getValueFromPattern {
+    arg pattern, key, default;
+    var keyIndex;
+    try {
+      if (pattern == nil, {
+        ^default
+      });
+      keyIndex = pattern.indexOf(key);
+      if (keyIndex.notNil) {
+        ^pattern[keyIndex + 1]
+      } {
+        ^default
+      }
+    } {
+      ^default
+    }
+  }
+
+  *getQuantFromPattern {
+    arg pattern;
+   ^this.getValueFromPattern(pattern, 'quant', 4)
+  }
+
+  *getFadeFromPattern {
+    arg pattern;
+    ^this.getValueFromPattern(pattern, 'fade', 0.01)
+  }
+
+
+
 }
