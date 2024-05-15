@@ -49,8 +49,28 @@ EventShortener {
   *patternBuboEvent {
     arg pattern;
     var new_pattern = List();
-    new_pattern = new_pattern ++ [\type, 'buboEvent'];
+    var sp_position = nil;
+    var nb_position = nil;
 
+    // Check if the sp key already exists in the pattern
+    if (pattern.includes('sp'), {
+      pattern.do({ arg e, i;
+        if (e == 'sp', {
+          sp_position = i;
+        })
+      });
+    });
+
+    // Check if the nb key already exists in the pattern
+    if (pattern.includes('nb'), {
+      pattern.do({ arg e, i;
+        if (e == 'nb', {
+          nb_position = i;
+        })
+      });
+    });
+
+    new_pattern = new_pattern ++ [\type, 'buboEvent'];
     pattern.doAdjacentPairs({ | a, b, index |
       if (index % 2 == 0, {
         if (a === 'pat', {
@@ -67,10 +87,17 @@ EventShortener {
               });
             });
           ];
-          new_pattern = new_pattern ++ [
-            sp: Pfunc { |e| e.str ? "" },
-            nb: Pfunc { |e| e.num ? 0 }
-          ];
+          if (sp_position.notNil, {
+            new_pattern = new_pattern ++ [
+              sp: pattern[sp_position + 1],
+              nb: pattern[nb_position + 1],
+            ];
+          }, {
+            new_pattern = new_pattern ++ [
+              sp: Pfunc { |e| e.str ? "" },
+              nb: Pfunc { |e| e.num ? 0 }
+            ];
+          });
         }, {
           new_pattern = new_pattern ++ [a, b];
         });
