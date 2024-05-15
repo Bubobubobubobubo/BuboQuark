@@ -63,9 +63,6 @@ Boot {
       Safety.all;
       Safety(s).defName = \safeLimit;
       Safety.setLimit(1);
-
-      e = currentEnvironment;
-
       MIDIClient.init;
     });
 
