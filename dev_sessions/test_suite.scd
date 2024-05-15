@@ -1,3 +1,4 @@
+// Remplacer la PATH par un chemin valide (dossiers/samples)
 (
 Boot(samplePath: "/Users/bubo/.config/livecoding/samples");
 )
@@ -118,4 +119,47 @@ SynthDef('acid', {
 ~acid.play;
 )
 
-// ================ SCRATCHPAD ================
+// ================ COMMANDES MIDI ================
+
+(
+MIDIClient.init;
+m = MIDIOut.newByName("MIDI", "Bus 1");
+)
+
+// TEST: ça passe (le canal 0 ne fonctionne pas !)
+(
+~notes >> [
+  midiout: m, chan: 1,
+  degree: [0, 4, 7, 10].pseq(inf),
+  dur: [1, 1/2, 1/4].pxrand(inf),
+];
+~notes.play;
+)
+
+
+// TEST: ça passe (le canal 0 ne fonctionne pas !)
+(
+~notes >> [
+  midiout: m, chan: 1, pat: "0 4 0 3 0 5",
+  octave: [3, 4, 5, 6].pxrand(inf),
+  legato: [0.125, 0.5].pwhite(inf),
+];
+~notes.play;
+)
+
+// TEST: ça passe
+(
+~control >>+ [
+  midiout: m, chan: 1, num: 20, val: [0, 127].pwhite(inf),
+  dur: [1, 1/2, 1/4].pxrand(inf),
+];
+~control.play;
+)
+
+// TEST: ça passe
+(
+~control >>+ [
+  midiout: m, chan: 1, num: 20, pat: "0 10 20 30 40 100 120",
+];
+~control.play;
+)
