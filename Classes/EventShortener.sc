@@ -98,7 +98,6 @@ EventShortener {
         });
       });
     });
-    new_pattern.postln;
     ^new_pattern
   }
 
@@ -156,7 +155,6 @@ EventShortener {
         });
       });
     });
-    new_pattern.postln;
     ^new_pattern
   }
 

@@ -53,8 +53,11 @@ Boot {
 	    s.latency = 0.3;
 
       // Resume normal boot sequence
-      "-> Loading config from: %".format(configPath ? (this.localPath +/+ "Startup.scd")).postln;
-      (configPath ? (this.localPath +/+ "Startup.scd")).load;
+      (this.localPath +/+ "Startup.scd").load;
+      if (configPath.notNil, {
+        configPath.load;
+      });
+
       BuboUtils.ready.postln;
       this.installServerTreeBehavior();
       this.clock.enableMeterSync();
@@ -136,5 +139,4 @@ Boot {
         currentEnvironment.play;
       });
     }
-
 }

@@ -76,6 +76,7 @@
       var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(pattern, this.key, 'buboEvent', 1);
       pattern = EffectChain.process(pattern, this.key);
+      "Je suis trigger".postln;
       this[0] = Pbind(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this
@@ -86,7 +87,6 @@
       arg pattern;
       var quant = BuboUtils.getQuantFromPattern(pattern);
       var fade = BuboUtils.getFadeFromPattern(pattern);
-      "Hello granular".postln;
       pattern = EventShortener.process(pattern, this.key, 'granular', 1);
       pattern = EffectChain.process(pattern, this.key);
       this[0] = Pbind(*pattern);
