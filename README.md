@@ -1,5 +1,8 @@
 # BuboQuark: A Live Coding Companion
 
+![BuboQuark algorave picture](images/capture.png)
+
+
 A collection of methods, hacks and tips I found to make my live coding workflow easier  on SuperCollider. Wraps around the base behavior of [JITLib](https://doc.sccode.org/Overviews/JITLib.html), makes writing patterns easier and faster. BuboQuark is not a replacement for the SCLang syntax. On the contrary, BuboQuark's goal is to make it easier to navigate the possibilities offered by the language. 
 
 ## What is BuboQuark?
