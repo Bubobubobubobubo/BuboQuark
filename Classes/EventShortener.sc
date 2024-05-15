@@ -3,9 +3,6 @@ EventShortener {
   *process {
     arg pattern, key, type, time;
     var new_pattern;
-    var additionalKeys = Dictionary.newFrom([
-      \looper, [type: \buboLoopEvent, legato: 1, time: time],
-    ]);
     new_pattern = this.findShortcuts(pattern);
     new_pattern = this.functionsToNdef(new_pattern, key);
     new_pattern = switch(type,
@@ -14,6 +11,7 @@ EventShortener {
       'midi', this.patternMidi(new_pattern),
       'midicc', this.patternMidiCC(new_pattern),
       'looper', this.patternLooper(new_pattern),
+      'granular', this.patternGranular(new_pattern),
     );
     ^new_pattern
   }
@@ -46,12 +44,11 @@ EventShortener {
     ^new_pattern
   }
 
-  *patternBuboEvent {
+  *patternGranular {
     arg pattern;
     var new_pattern = List();
     var sp_position = nil;
     var nb_position = nil;
-
     // Check if the sp key already exists in the pattern
     if (pattern.includes('sp'), {
       pattern.do({ arg e, i;
@@ -60,7 +57,6 @@ EventShortener {
         })
       });
     });
-
     // Check if the nb key already exists in the pattern
     if (pattern.includes('nb'), {
       pattern.do({ arg e, i;
@@ -69,7 +65,64 @@ EventShortener {
         })
       });
     });
+    new_pattern = new_pattern ++ [\type, 'buboGranular'];
+    pattern.doAdjacentPairs({ | a, b, index |
+      if (index % 2 == 0, {
+        if (a === 'pat', {
+          var temp = Pmini(b);
+          new_pattern = new_pattern ++ [
+            [\trig, \delta, \dur, \str, \num], Pmini(b),
+          ];
+          new_pattern = new_pattern ++ [
+            degree: Pfunc({ |e|
+              if (e.trig > 0, {
+                e.str.asInteger
+              }, {
+                \rest
+              });
+            });
+          ];
+          if (sp_position.notNil, {
+            new_pattern = new_pattern ++ [
+              sp: pattern[sp_position + 1],
+              nb: pattern[nb_position + 1],
+            ];
+          }, {
+            new_pattern = new_pattern ++ [
+              sp: Pfunc { |e| e.str ? "" },
+              nb: Pfunc { |e| e.num ? 0 }
+            ];
+          });
+        }, {
+          new_pattern = new_pattern ++ [a, b];
+        });
+      });
+    });
+    new_pattern.postln;
+    ^new_pattern
+  }
 
+  *patternBuboEvent {
+    arg pattern;
+    var new_pattern = List();
+    var sp_position = nil;
+    var nb_position = nil;
+    // Check if the sp key already exists in the pattern
+    if (pattern.includes('sp'), {
+      pattern.do({ arg e, i;
+        if (e == 'sp', {
+          sp_position = i;
+        })
+      });
+    });
+    // Check if the nb key already exists in the pattern
+    if (pattern.includes('nb'), {
+      pattern.do({ arg e, i;
+        if (e == 'nb', {
+          nb_position = i;
+        })
+      });
+    });
     new_pattern = new_pattern ++ [\type, 'buboEvent'];
     pattern.doAdjacentPairs({ | a, b, index |
       if (index % 2 == 0, {

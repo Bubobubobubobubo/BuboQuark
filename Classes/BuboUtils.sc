@@ -99,7 +99,4 @@ BuboUtils {
     arg pattern;
     ^this.getValueFromPattern(pattern, 'fade', 0.01)
   }
-
-
-
 }

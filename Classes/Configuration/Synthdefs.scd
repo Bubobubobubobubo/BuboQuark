@@ -25,10 +25,35 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
   d.player = z;
 );
 
+/*
+* Granular Sampler
+*/
+(
+  z = SynthDef('grainSampler', {
+    arg out, buf;
+    var sound = GrainBuf.ar(
+      numChannels: buf.numChannels,
+      trigger: Impulse.kr(\grain.kr(4)),
+      dur: 1, sndbuf: buf,
+      rate: \rate.kr(4),
+      pos: \pos.kr(0.0),
+      interp: 2,
+      pan: \pan.kr(0.0),
+      envbufnum: \env.kr(-1),
+    );
+    sound = sound * Env.perc(
+      \attack.kr(0.1), \release.kr(0.5)
+    ).kr(2);
+    sound = sound * \amp.kr(-6).dbamp;
+    OffsetOut.ar(out, sound);
+  }).add;
+  d.grainSampler = z;
+);
 
 /*
 * Stereo variant
 */
+
 (
   z = SynthDef.new(\splayer, {
   	arg buf, out;

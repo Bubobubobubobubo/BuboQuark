@@ -119,5 +119,22 @@ Boot {
         ~type = \note;
         currentEnvironment.play;
       });
+
+      Event.addEventType(\buboGranular, {
+        arg server;
+        if (~sp.notNil, {
+          if (BuboUtils.stringIsNumber(~sp), {}, {
+            ~sp = BuboUtils.cleanSampleName(~sp);
+            ~nb = BuboUtils.cleanSampleIndex(~nb);
+            if (~sp !== "", {
+              ~buf = Bank(~sp)[~nb % Bank(~sp).paths.size];
+              ~instrument = 'grainSampler';
+            });
+          });
+        });
+        ~type = \note;
+        currentEnvironment.play;
+      });
     }
+
 }

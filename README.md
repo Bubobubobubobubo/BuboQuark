@@ -75,6 +75,7 @@ I personally dislike the `Pbind(\qdklsj)` or `Ndef(\qkljsdf)` syntax. The `\` sy
 
 - Operators for creating SuperCollider patterns on-the-fly:
     -  `=>` (Pbind): basic musical pattern
+    -  `+=>` (Pbind): granular sampler
     -  `->` (Pmono): monophonic expression pattern
     -  `==>` (Looper): looper/sampler (**WIP**, currently broken)
     - `>>` (Note): MIDI Note Pattern
@@ -216,7 +217,24 @@ This is pitched sample playback. Note that you can also decompose patterns with 
 )
 ```
 
-All the remaining keys in patterns are behaving just like regular SuperCollider patterns.
+Here is some granular sampling:
+
+```cpp
+(
+~test +=> [
+  sp: "casio", nb: [0, 2, 4].pseq(inf), amp: 1,
+  grain: {SinOsc.ar(1/4).range(1,20)},
+  pos: {LFNoise2.kr(1/8).range(0, 0.25)},
+  rate: Pwhite(1, 2, inf)
+];
+~test.play;
+~test.fx(100, 0.5, {
+  arg in; MiVerb.ar(in, time: 0.5);
+})
+)
+```
+
+All the remaining pattern keys you can think of are behaving just like regular SuperCollider patterns.
 
 ### Controlling synthesizers
 

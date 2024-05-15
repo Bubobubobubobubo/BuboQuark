@@ -81,6 +81,19 @@
       ^this
     }
 
+    /* Granular Sampler */
+    +=> {
+      arg pattern;
+      var quant = BuboUtils.getQuantFromPattern(pattern);
+      var fade = BuboUtils.getFadeFromPattern(pattern);
+      "Hello granular".postln;
+      pattern = EventShortener.process(pattern, this.key, 'granular', 1);
+      pattern = EffectChain.process(pattern, this.key);
+      this[0] = Pbind(*pattern);
+      this.prepareToPlay(this, quant, fade);
+      ^this
+    }
+
     /* Pmono player */
     -> {
       arg pattern;
