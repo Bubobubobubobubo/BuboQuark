@@ -9,3 +9,5 @@ c = currentEnvironment.clock;
 
 // Debug during development
 // OSCFunc.trace(true);
+
+a = Archive.global

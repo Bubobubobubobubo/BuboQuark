@@ -1,3 +1,20 @@
++ ProxySpace {
+
+  solo {
+    arg name, fadeTime=4;
+    var names = name.isArray.if({ name }, { [name] });
+    this.do({ |proxy|
+      if (names.includes(proxy.key).not, {
+        proxy.stop(fadeTime: fadeTime);
+      });
+    });
+  }
+
+  silence {|fadeTime=0|
+    this.stop(fadeTime: fadeTime)
+  }
+
+}
 
 + NodeProxy {
 
@@ -76,7 +93,6 @@
       var fade = BuboUtils.getFadeFromPattern(pattern);
       pattern = EventShortener.process(pattern, this.key, 'buboEvent', 1);
       pattern = EffectChain.process(pattern, this.key);
-      "Je suis trigger".postln;
       this[0] = Pbind(*pattern);
       this.prepareToPlay(this, quant, fade);
       ^this

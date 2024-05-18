@@ -7,50 +7,50 @@ Boot {
 
   *new {
     arg configPath, samplePath, serverOptions;
-    var p; var c; var t; var s; var d; var e; var b;
+    var pspace; var server; var d; var e;
     BuboUtils.banner().postln;
     Server.killAll;
 
     if (serverOptions == nil, {
       "-> Booting using default server configuration".postln;
-      s = Server.default;
-      s.options.numBuffers = (2048 * 2048) * 2;
-      s.options.maxLogins = 1;
-      s.options.memSize = 8192 * 64;
-	    s.options.numWireBufs = 2048;
-	    s.options.maxNodes = 1024 * 32;
-	    s.options.numOutputBusChannels = 24;
-	    s.options.numInputBusChannels = 16;
+      server = Server.default;
+      server.options.numBuffers = (2048 * 2048) * 2;
+      server.options.maxLogins = 1;
+      server.options.memSize = 8192 * 64;
+      server.options.numWireBufs = 2048;
+      server.options.maxNodes = 1024 * 32;
+      server.options.numOutputBusChannels = 24;
+      server.options.numInputBusChannels = 16;
     }, {
       "-> Booting using custom server configuration".postln;
-      s = Server.default;
+      server = Server.default;
       // Imposing a very high number of buffers!
       serverOptions.numBuffers = (2048 * 512) * 2;
-      s.options = serverOptions;
+      server.options = serverOptions;
     });
 
     // Using Ableton Link Clock to sync with other peers
     this.clock = LinkClock(130 / 60).latency_(Server.default.latency).permanent_(true);
     TempoClock.default = this.clock;
-    c = this.clock;
-    t = this.clock.tempo;
 
     // Defaut local path for configuration files if not configPath
     this.localPath = this.class.filenameSymbol.asString.dirname +/+ "Configuration";
     this.samplePath = samplePath;
 
-    p = ProxySpace.push(s.boot, clock: this.clock);
-    p.quant = 4;
-    p.fadeTime = 0.01;
+    pspace = ProxySpace.push(server.boot, clock: this.clock);
+    pspace.quant = 4;
+    pspace.fadeTime = 0.01;
 
     // Setting up the audio samples/buffers manager
     Bank.lazyLoading = true;
     Bank.root = this.samplePath;
+    "=> Loading audio samples:".postln;
+    Bank.list.postln;
 
     // Post actions: installing behavior after server boot
     Server.default.waitForBoot({
 
-	    s.latency = 0.3;
+      server.latency = 0.3;
 
       // Resume normal boot sequence
       (this.localPath +/+ "Startup.scd").load;
@@ -64,8 +64,10 @@ Boot {
 
       // Installing Safety
       Safety.all;
-      Safety(s).defName = \safeLimit;
+      Safety(server).defName = \safeLimit;
       Safety.setLimit(1);
+
+      // Configuring the MIDI Out now
       MIDIClient.init;
     });
 

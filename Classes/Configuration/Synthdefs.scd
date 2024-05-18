@@ -139,7 +139,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
     ),1,1,0,1,2);
   	sig = SinOscFB.ar(
       \freq.kr(400),
-      \fb.kr(0),
+      \fb.kr(0.5),
       1
     );
   	sig = sig * env;
@@ -184,10 +184,10 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
         var sig;
         sig = MiPlaits.ar(
           pitch: \freq.kr(400).cpsmidi,
-          timbre: \timbre.kr(0),
-          harm: \harm.kr(0),
+          timbre: \timbre.kr(0.5),
+          harm: \harm.kr(0.5),
           engine: index,
-          morph: \morph.kr(0),
+          morph: \morph.kr(0.5),
           level: \level.kr(1),
           decay: \lpgdecay.kr(0),
           lpg_colour: \lpgcolour.kr(0),
@@ -260,8 +260,8 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
       var freq = \freq.kr;
       sig = MiBraids.ar(
         pitch: freq.cpsmidi,
-        timbre: \timbre.kr(0),
-        color: \color.kr(0),
+        timbre: \timbre.kr(0.5),
+        color: \color.kr(0.5),
         resamp: 0,
         decim: \decim.kr(32),
         model: index,
@@ -296,26 +296,6 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
   d.tides = z;
 );
 
-// (
-//   z = SynthDef('pink', {
-//     arg out;
-//     var pink = PinkTrombone.ar(
-//       noiseSource: BPF.ar(WhiteNoise.ar(), \noiseFilter.kr(2000)),
-//       freq: \freq.kr(800),
-//       tenseness: \tenseness.kr(0.4),
-//       tongueIndex: \tongueIndex.kr(30),
-//       tongueDiameter: \tongueDiameter.kr(3.5),
-//       constrictionX: \constrictionX.kr(1.5),
-//       constrictionY: \constrictionY.kr(2.5),
-//       fricativeIntens: \fricativeIntens.kr(1.5)
-//     );
-//     var env = Env.perc(\attack.kr(0.01), releaseTime: \release.kr(2.0)).kr(doneAction: 2);
-//     var sound = pink * env;
-//     OffsetOut.ar(out, Pan2.ar(sound, pos: \pan.kr(0.0)))
-//   }).add;
-//   d.pink = z;
-// );
-
 (
   z = SynthDef('kick', {
       arg out;
@@ -337,6 +317,21 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
 
 
 (
+  z = SynthDef('nnkick', {
+    arg out;
+    var sig, env;
+    env = Env.perc(\attack.kr(0.001), \release.kr(0.8)).ar(Done.freeSelf);
+    sig = SinOsc.ar(\freq.kr(50) * (1 + (8 * Env.perc(0, 0.13, curve:-8).ar)));
+    sig = sig + (SinOsc.ar(XLine.ar(\sweep.kr(8000), 100, 0.01)) * Env.perc(0.0001,0.01).ar * -8.dbamp);
+    sig = sig +(BPF.ar(WhiteNoise.ar, \cutoff.kr(10120), 0.5)*Env.perc(0.0001, 0.03).ar * -8.dbamp);
+    sig = sig.tanh;
+    sig = sig * env * \amp.kr(-10).dbamp;
+    OffsetOut.ar(out, Pan2.ar(sig, \pan.kr(0.0)));
+  }).add;
+  d.nnkick = z;
+);
+
+(
   z = SynthDef('kraut', {
     /*
     * time: frequency sweep time
@@ -355,7 +350,7 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
     var env = Env.perc(\attack.kr, \release.kr(0.5)).ar(doneAction: 2);
     var sound = sin.lincurve(-1, 1, -1, 1, \curve.kr(4));
     sound = sound * \amp.kr(-6).dbamp;
-    OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, \pan.kr(0), env))
+    OffsetOut.ar(out, Pan2.ar(sound, \pan.kr(0)));
   }).add;
   d.kraut = z;
 );
