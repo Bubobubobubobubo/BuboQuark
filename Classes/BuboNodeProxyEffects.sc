@@ -89,7 +89,7 @@
     rings {
       /* TODO: adapt with audio rate pattern capabilities */
       arg pitch=60, trig=0, struct=0.25, bright=0.5, 
-      damp=0.5, position=0.25, model=0, position=950, wet=1;
+      damp=0.5, position=0.25, model=0, pos=950, wet=1;
       this.fx(pos, wet, { |in|
         MiRings.ar(
           in: in,
