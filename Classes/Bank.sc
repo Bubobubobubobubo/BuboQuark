@@ -1,6 +1,9 @@
 Bank : Singleton {
     classvar <>root, <>extensions, <>lazyLoading=true;
-    var <paths, buffers, <channels, <foundRoot, <foundRootModTime, markersCache, atCache;
+    var <paths, buffers,
+    <channels, <foundRoot,
+    <foundRootModTime, 
+    markersCache, atCache;
     var metadata;
 
     *initClass {

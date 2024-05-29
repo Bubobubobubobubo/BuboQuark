@@ -4,7 +4,7 @@ Boot {
   classvar <>localPath;
   classvar <>samplePath;
   classvar <>serverOptions;
-
+ 
   *new {
     arg configPath, samplePath, serverOptions;
     var pspace; var server; var d; var e;
@@ -44,12 +44,9 @@ Boot {
     // Setting up the audio samples/buffers manager
     Bank.lazyLoading = true;
     Bank.root = this.samplePath;
-    "=> Loading audio samples:".postln;
-    Bank.list.postln;
 
     // Post actions: installing behavior after server boot
     Server.default.waitForBoot({
-
       server.latency = 0.3;
 
       // Resume normal boot sequence
