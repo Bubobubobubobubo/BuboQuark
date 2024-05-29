@@ -21,22 +21,22 @@
     }
 
     limiter {
-      arg level=1.0, position=950, wet=1;
-      this.fx(position, wet, { |in|
+      arg level=1.0, pos=950, wet=1;
+      this.fx(pos, wet, { |in|
         Limiter.ar(in: in, level: level, dur: 0.01)
       })
     }
 
     compressor {
       arg sidechainIn=false, sidechain=0, ratio=4, threshold=40.neg,
-      attack=0.1, release=100.01, makeup=0.5, automakeup=1, position=950, wet=1;
+      attack=0.1, release=100.01, makeup=0.5, automakeup=1, pos=950, wet=1;
       var sideChainValue;
       if (sidechainIn.not, {
         var sideChainValue = 0;
       }, {
         var sideChainValue = sidechainIn;
       });
-      this.fx(position, wet, { |in|
+      this.fx(pos, wet, { |in|
         DCompressor.ar(in,
           sidechainIn: sideChainValue,
           sidechain: sidechain,
@@ -53,8 +53,8 @@
 
     flanger {
       /* FIX: Make it better than it currently is */
-      arg modSpeed=0.1, modDepth=0.01, position=950, wet=1;
-      this.fx(position, wet, {
+      arg modSpeed=0.1, modDepth=0.01, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         var lfo = SinOsc.kr(modSpeed, 3pi / 2).range(0.001, modDepth);
         var delay = DelayL.ar(in, 0.01, lfo);
@@ -64,8 +64,8 @@
 
     phaser {
       /* TODO: implement */
-      arg position=950, wet=1;
-      this.fx(position, wet, {
+      arg pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         in
       })
@@ -73,8 +73,8 @@
 
     grain {
       /* Experimental live audio granular effect */
-      arg grains=32, dur= 0.1, position=950, wet=1;
-      this.fx(position, wet, { |in|
+      arg grains=32, dur= 0.1, pos=950, wet=1;
+      this.fx(pos, wet, { |in|
         var signal = DelayN.ar(in, 0.2, 0.2) * 0.7;
         var modulatedSignal = GrainIn.ar(
           numChannels: 2,
@@ -89,8 +89,8 @@
     rings {
       /* TODO: adapt with audio rate pattern capabilities */
       arg pitch=60, trig=0, struct=0.25, bright=0.5, 
-      damp=0.5, pos=0.25, model=0, position=950, wet=1;
-      this.fx(position, wet, { |in|
+      damp=0.5, position=0.25, model=0, position=950, wet=1;
+      this.fx(pos, wet, { |in|
         MiRings.ar(
           in: in,
           trig: trig,
@@ -98,7 +98,7 @@
           struct: struct,
           bright: bright,
           damp: damp,
-          pos: pos,
+          pos: position,
           model: model,
           poly: 1,
         )
@@ -107,9 +107,9 @@
 
     distort {
       arg cutoff=600, gain=0.5, harmonics=0,
-      lowgain=0.1, highgain=0.1, position=950,
+      lowgain=0.1, highgain=0.1, pos=950,
       wet=1;
-      this.fx(position, wet, {
+      this.fx(pos, wet, {
         arg in;
         AnalogVintageDistortion.ar(
           in,
@@ -124,8 +124,8 @@
     }
 
     crush {
-      arg rate=Server.default.sampleRate, bits=24, position=950, wet=1;
-      this.fx(position, wet, {
+      arg rate=Server.default.sampleRate, bits=24, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         Decimator.ar(
           in,
@@ -137,8 +137,8 @@
     }
 
     shift {
-      arg ratio=1, dispersion= 0.0, time=0.0, position=950, wet=1;
-      this.fx(position, wet, {
+      arg ratio=1, dispersion= 0.0, time=0.0, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         PitchShift.ar(
           in: in,
@@ -151,8 +151,8 @@
     }
 
     verb {
-      arg time=0.5, damp=0.5, freeze=0, position=950, wet=1;
-      this.fx(position, 1, {
+      arg time=0.5, damp=0.5, freeze=0, pos=950, wet=1;
+      this.fx(pos, 1, {
         arg in;
         MiVerb.ar(
           inputArray: in,
@@ -165,8 +165,8 @@
     }
 
     delay {
-      arg time=2, slice=0.125, decay=1, position=950, wet=1;
-      this.fx(position, wet, {
+      arg time=2, slice=0.125, decay=1, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
           CombC.ar(
             in: in,
@@ -178,16 +178,16 @@
     }
 
     lpf {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         RLPF.ar(in, cutoff, resonance);
       })
     }
 
     mooglpf {
-      arg cutoff=10000, resonance=0.5, saturation=0.95, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, saturation=0.95, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         BMoog.ar(
           in: in,
@@ -200,8 +200,8 @@
     }
 
     vlpf2 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -213,8 +213,8 @@
     }
 
     vlpf4 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -226,8 +226,8 @@
     }
 
     mooghpf {
-      arg cutoff=10000, resonance=0.5, saturation=0.95, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, saturation=0.95, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         BMoog.ar(
           in: in,
@@ -240,8 +240,8 @@
     }
 
     moogbpf {
-      arg cutoff=10000, resonance=0.5, saturation=0.95, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, saturation=0.95, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         BMoog.ar(
           in: in,
@@ -255,16 +255,16 @@
 
 
     hpf {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         RHPF.ar(in, cutoff, resonance);
       })
     }
 
     vhpf2 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -276,8 +276,8 @@
     }
 
     vhpf4 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -289,16 +289,16 @@
     }
 
     bpf {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         BPF.ar(in, cutoff, resonance);
       })
     }
 
     vbpf2 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -310,8 +310,8 @@
     }
 
     vbpf4 {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         VadimFilter.ar(
           in,
@@ -323,8 +323,8 @@
     }
 
     brf {
-      arg cutoff=10000, resonance=0.5, position=950, wet=1;
-      this.fx(position, wet, {
+      arg cutoff=10000, resonance=0.5, pos=950, wet=1;
+      this.fx(pos, wet, {
         arg in;
         BRF.ar(in, cutoff, resonance);
       })
