@@ -50,24 +50,38 @@
       })
     }
 
-
     flanger {
-      /* FIX: Make it better than it currently is */
-      arg modSpeed=0.1, modDepth=0.01, pos=950, wet=1;
+      arg pos=950, wet=1, maxdelay=0.013, maxrate=10.0, delay=0.1, depth=0.08, rate=0.06, fdbk=0.0, decay=0.0;
       this.fx(pos, wet, {
         arg in;
-        var lfo = SinOsc.kr(modSpeed, 3pi / 2).range(0.001, modDepth);
-        var delay = DelayL.ar(in, 0.01, lfo);
-        in + delay
+        var dsig, mixed, local;
+        local = LocalIn.ar(1);
+        dsig = AllpassL.ar(
+          in + (local * fdbk),
+          maxdelay * 2,
+          LFPar.kr(
+            rate * maxrate, 0,
+            depth * maxdelay,
+            delay * maxdelay
+          ), decay
+        );
+        mixed = in + dsig;
+        mixed
       })
     }
 
     phaser {
-      /* TODO: implement */
-      arg pos=950, wet=1;
+      arg pos=950, wet=1, speed=1;
       this.fx(pos, wet, {
         arg in;
-        in
+        var delay = AllpassL.ar(in, 4,
+          SinOsc.kr(speed).range(
+            0.000022675,
+            0.01
+          ) + (0.01).rand,
+          0
+        );
+        delay
       })
     }
 
@@ -174,6 +188,26 @@
             delaytime: slice,
             decaytime: decay
           )
+      });
+    }
+
+    dub {
+      arg in, length = 1, fb = 0.8, sep = 0.012, pos=950, wet=1;
+      this.fx(pos, wet, {
+        arg in;
+	      var output = in + Fb({ |feedback|
+	      	var left, right;
+	      	var magic = LeakDC.ar(feedback * fb + in);
+	      	magic = HPF.ar(magic, 400);
+	      	magic = LPF.ar(magic, 5000);
+	      	magic = magic.tanh;
+	      	#left, right = magic;
+	      	magic = [
+            DelayC.ar(left, 1, LFNoise2.ar(12).range(0,sep)),
+            DelayC.ar(right, 1, LFNoise2.ar(12).range(sep,0))
+          ].reverse;
+	      },length);
+        output
       });
     }
 
