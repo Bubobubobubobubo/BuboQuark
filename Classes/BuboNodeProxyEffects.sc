@@ -50,6 +50,32 @@
       })
     }
 
+    crackle {
+      arg pos=950, wet=1, crackles=4, cutoff=5000;
+      this.fx(pos, wet, {
+        arg in;
+        in + LPF.ar(Dust2.ar(crackles), cutoff)
+      });
+    }
+
+    dj {
+      // NOTE: taken from SuperDirt (https://github.com/musikinformatik/SuperDirt)
+      arg pos=950, wet=1, cutoff=4000;
+      this.fx(pos, wet, {
+        arg in;
+		    var lpfCutoffFreq = cutoff.linexp(0, 0.5, 20, 10000);
+		    var hpfCutoffFreq = cutoff.linexp(0.5, 1, 20, 10000);
+        var signal = RHPF.ar(
+          RLPF.ar(
+            in,
+            lpfCutoffFreq
+          ),
+          hpfCutoffFreq
+        );
+        signal
+      })
+    }
+
     flanger {
       arg pos=950, wet=1, maxdelay=0.013, maxrate=10.0, delay=0.1, depth=0.08, rate=0.06, fdbk=0.0, decay=0.0;
       this.fx(pos, wet, {
