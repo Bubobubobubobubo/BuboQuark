@@ -331,28 +331,55 @@ d.list = { arg obj; obj.keys.do({arg i; i.postln}); };
   d.nnkick = z;
 );
 
+
 (
-  z = SynthDef('kraut', {
-    /*
-    * time: frequency sweep time
-    * tune: frequency division
-    * harmonics: nb of harmonics
-    * curve: distortion
-    * modSpeed: frequency bias
-    */
-    arg out;
-    var sweepFreq = XLine.ar(\freq.kr(400) * 1.99, \freq.kr, \attack.kr(0.05) / \time.kr(2));
-    var frequencyBias = SinOsc.ar(\modSpeed.kr(8)).range(0.99, 1);
-    var sin = SinOscFB.ar([
-      sweepFreq * \tune.kr(1) * frequencyBias,
-      sweepFreq / \tune.kr * frequencyBias],
-      feedback: \harmonics.kr(0.25));
-    var env = Env.perc(\attack.kr, \release.kr(0.5)).ar(doneAction: 2);
-    var sound = sin.lincurve(-1, 1, -1, 1, \curve.kr(4));
-    sound = sound * \amp.kr(-6).dbamp;
-    OffsetOut.ar(out, Pan2.ar(sound, \pan.kr(0)));
+  ["lpf", "bpf", "hpf"].do({
+	  arg synth_type, index;
+	  z = SynthDef(("chip" ++ synth_type).asSymbol , {
+	    arg out=0;
+	    var vibrato = SinOsc.ar(
+        \vibspeed.kr(2)).range(
+          \vibdepth.kr(0).neg,
+          \vibdepth.kr
+      ) * \vibrato.kr(1);
+	  var pitchEnv = XLine.ar(1/4, 1, \glide.kr(0.1) / 10);
+	  var filtEnv = Env.perc(\fattack.kr(0.01), \frelease.kr(1.0)).kr(doneAction: 0);
+	  var detune = \detune.kr(0);
+	  var basePitch = pitchEnv * \freq.kr(400);
+	  var sound = AY.ar(
+      tonea: AY.freqtotone(basePitch + vibrato + detune),
+      toneb: AY.freqtotone(basePitch * \ratio.kr(1) + vibrato - detune),
+      tonec: AY.freqtotone(basePitch / \ratio.kr + vibrato + (detune/2)),
+      noise: \noise.kr(0).linlin(0, 1, 0, 31),
+      control: \control.kr(0.125).linlin(0, 1, 0, 63),
+      vola: \vola.kr(15),
+      volb: \volb.kr(15),
+      volc: \volc.kr(15),
+      envfreq: \envfreq.kr(4),
+      envstyle: \envstyle.kr(1),
+      chiptype: \type.kr(0)
+	  );
+	  var env = Env.asr(
+      \attack.kr(0.01),
+		  \sustain.kr(0),
+		  \release.kr(0.125/2)
+	  );
+	  env = EnvGen.ar(
+      env,
+      gate: \gate.kr(1.0),
+      doneAction: 2
+    );
+	  sound = VadimFilter.ar(
+		  sound,
+		  freq: \cutoff.kr(10000) * filtEnv,
+		  resonance: \resonance.kr(0.5),
+		  type: index
+	  );
+	  sound = sound * env * \amp.kr(1.0);
+	  Out.ar(out, Pan2.ar(sound ! 2, \pan.kr(0.0)));
   }).add;
-  d.kraut = z;
+  d[z.name] = z;
+});
 );
 
 z = nil; // We don't need that variable anymore
